@@ -1,71 +1,102 @@
-from vacancy import Vacancy
-from json_saver import JSONSaver
+# Задание
+# Напишите программу, которая будет получать информацию о вакансиях с платформы hh.ru в России,
+# сохранять ее в файл и позволять удобно работать с ней: добавлять, фильтровать, удалять.
+#
+# Объединить все классы и функции в единую программу.
+# Покрыть описанный функционал тестами.
 
 
-def main():
-    # 1. Создаём несколько вакансий
-    vacancies = [
-        Vacancy(
-            title="Python-разработчик",
-            company="TechCorp",
-            salary=150000,
-            city="Москва",
-            url="https://example.com/vacancy/1"
-        ),
-        Vacancy(
-            title="Frontend-разработчик",
-            company="WebSoft",
-            salary=120000,
-            city="Санкт-Петербург",
-            url="https://example.com/vacancy/2"
-        )
-    ]
+# Вариант ЗАДАНИЯ №2
+# Функция для взаимодействия с пользователем
+def user_interaction():
+    platforms = ["HeadHunter"]
+    search_query = input("Введите поисковый запрос: ")
+    top_n = int(input("Введите количество вакансий для вывода в топ N: "))
+    filter_words = input("Введите ключевые слова для фильтрации вакансий: ").split()
+    salary_range = input("Введите диапазон зарплат: ") # Пример: 100000 - 150000
 
-    # 2. Создаём савер для работы с файлом "my_vacancies.json"
-    saver = JSONSaver("my_vacancies.json")
+    filtered_vacancies = filter_vacancies(vacancies_list, filter_words)
 
-    # 3. Сохраняем список вакансий в файл
-    print("Сохраняем вакансии в файл...")
-    saver.save(vacancies)
-    print("Вакансии сохранены.\n")
+    ranged_vacancies = get_vacancies_by_salary(filtered_vacancies, salary_range)
 
-    # 4. Загружаем вакансии из файла
-    print("Загружаем вакансии из файла...")
-    loaded_vacancies = saver.load()
-    print(f"Загружено {len(loaded_vacancies)} вакансий:")
-    for vac in loaded_vacancies:
-        print(f"- {vac.title} в {vac.company}, {vac.salary} руб.")
-    print()
-
-    # 5. Добавляем новую вакансию
-    new_vacancy = Vacancy(
-        title="Data Scientist",
-        company="AI Labs",
-        salary=200000,
-        city="Новосибирск",
-        url="https://example.com/vacancy/3"
-    )
-    print("Добавляем новую вакансию...")
-    saver.add(new_vacancy)
-    print("Вакансия добавлена.\n")
-
-    # 6. Снова загружаем и выводим все вакансии
-    print("Проверяем обновлённый список:")
-    updated_vacancies = saver.load()
-    print(f"Теперь в файле {len(updated_vacancies)} вакансий:")
-    for vac in updated_vacancies:
-        print(f"- {vac.title} в {vac.company}, {vac.salary} руб.")
-    print()
-
-    # 7. Очищаем файл (опционально)
-    print("Очищаем файл...")
-    saver.clear()
-    print("Файл очищен.")
-
+    sorted_vacancies = sort_vacancies(ranged_vacancies)
+    top_vacancies = get_top_vacancies(sorted_vacancies, top_n)
+    print_vacancies(top_vacancies)
 
 
 if __name__ == "__main__":
-    main()
+    user_interaction()
+
+
+# # Вариант ИИ
+# from vacancy import Vacancy
+# from json_saver import JSONSaver
+#
+#
+# def main():
+#     # 1. Создаём несколько вакансий
+#     vacancies = [
+#         Vacancy(
+#             title="Python-разработчик",
+#             company="TechCorp",
+#             salary=150000,
+#             city="Москва",
+#             url="https://example.com/vacancy/1"
+#         ),
+#         Vacancy(
+#             title="Frontend-разработчик",
+#             company="WebSoft",
+#             salary=120000,
+#             city="Санкт-Петербург",
+#             url="https://example.com/vacancy/2"
+#         )
+#     ]
+#
+#     # 2. Создаём савер для работы с файлом "my_vacancies.json"
+#     saver = JSONSaver("my_vacancies.json")
+#
+#     # 3. Сохраняем список вакансий в файл
+#     print("Сохраняем вакансии в файл...")
+#     saver.save(vacancies)
+#     print("Вакансии сохранены.\n")
+#
+#     # 4. Загружаем вакансии из файла
+#     print("Загружаем вакансии из файла...")
+#     loaded_vacancies = saver.load()
+#     print(f"Загружено {len(loaded_vacancies)} вакансий:")
+#     for vac in loaded_vacancies:
+#         print(f"- {vac.title} в {vac.company}, {vac.salary} руб.")
+#     print()
+#
+#     # 5. Добавляем новую вакансию
+#     new_vacancy = Vacancy(
+#         title="Data Scientist",
+#         company="AI Labs",
+#         salary=200000,
+#         city="Новосибирск",
+#         url="https://example.com/vacancy/3"
+#     )
+#     print("Добавляем новую вакансию...")
+#     saver.add(new_vacancy)
+#     print("Вакансия добавлена.\n")
+#
+#     # 6. Снова загружаем и выводим все вакансии
+#     print("Проверяем обновлённый список:")
+#     updated_vacancies = saver.load()
+#     print(f"Теперь в файле {len(updated_vacancies)} вакансий:")
+#     for vac in updated_vacancies:
+#         print(f"- {vac.title} в {vac.company}, {vac.salary} руб.")
+#     print()
+#
+#     # 7. Очищаем файл (опционально)
+#     print("Очищаем файл...")
+#     saver.clear()
+#     print("Файл очищен.")
+#
+#
+#
+# if __name__ == "__main__":
+#     main()
 
 
 
