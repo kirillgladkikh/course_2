@@ -69,23 +69,23 @@ class Vacancy:
             return "Описание отсутствует"
         return description.strip()
 
-    def __lt__(self, other: 'Vacancy') -> bool:
+    def __lt__(self, other: "Vacancy") -> bool:
         """Сравнение по зарплате (меньше)."""
         return self._parse_salary() < other._parse_salary()
 
-    def __le__(self, other: 'Vacancy') -> bool:
+    def __le__(self, other: "Vacancy") -> bool:
         """Сравнение по зарплате (меньше или равно)."""
         return self._parse_salary() <= other._parse_salary()
 
-    def __eq__(self, other: 'Vacancy') -> bool:
+    def __eq__(self, other: "Vacancy") -> bool:
         """Сравнение по зарплате (равно)."""
         return self._parse_salary() == other._parse_salary()
 
-    def __gt__(self, other: 'Vacancy') -> bool:
+    def __gt__(self, other: "Vacancy") -> bool:
         """Сравнение по зарплате (больше)."""
         return self._parse_salary() > other._parse_salary()
 
-    def __ge__(self, other: 'Vacancy') -> bool:
+    def __ge__(self, other: "Vacancy") -> bool:
         """Сравнение по зарплате (больше или равно)."""
         return self._parse_salary() >= other._parse_salary()
 
@@ -98,7 +98,8 @@ class Vacancy:
             return 0
 
         import re
-        numbers = re.findall(r'\d+', self.salary)
+
+        numbers = re.findall(r"\d+", self.salary)
         if numbers:
             # Берём первое число как базовое значение
             return int(numbers[0])
@@ -106,19 +107,9 @@ class Vacancy:
 
     def to_dict(self) -> dict:
         """Преобразует объект вакансии в словарь."""
-        return {
-            "title": self.title,
-            "url": self.url,
-            "salary": self.salary,
-            "description": self.description
-        }
+        return {"title": self.title, "url": self.url, "salary": self.salary, "description": self.description}
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'Vacancy':
+    def from_dict(cls, data: dict) -> "Vacancy":
         """Создаёт объект вакансии из словаря."""
-        return cls(
-            title=data["title"],
-            url=data["url"],
-            salary=data.get("salary"),
-            description=data["description"]
-        )
+        return cls(title=data["title"], url=data["url"], salary=data.get("salary"), description=data["description"])

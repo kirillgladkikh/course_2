@@ -13,7 +13,7 @@ def user_interaction():
     search_query = input("Введите поисковый запрос: ")
     top_n = int(input("Введите количество вакансий для вывода в топ N: "))
     filter_words = input("Введите ключевые слова для фильтрации вакансий: ").split()
-    salary_range = input("Введите диапазон зарплат: ") # Пример: 100000 - 150000
+    salary_range = input("Введите диапазон зарплат: ")  # Пример: 100000 - 150000
 
     filtered_vacancies = filter_vacancies(vacancies_list, filter_words)
 
@@ -97,15 +97,6 @@ if __name__ == "__main__":
 #
 # if __name__ == "__main__":
 #     main()
-
-
-
-
-
-
-
-
-
 
 
 # from src.classes import HHVacancies

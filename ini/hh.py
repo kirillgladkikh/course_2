@@ -7,10 +7,9 @@ from abc import ABC, abstractmethod
 import requests
 
 
-
 class FileWorker:
     def save_to_json(self, data, filename):
-        with open(filename, 'w', encoding='utf-8') as f:
+        with open(filename, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
     def save_to_csv(self, data, filename):
@@ -18,7 +17,7 @@ class FileWorker:
         pass
 
     def read_json(self, filename):
-        with open(filename, 'r', encoding='utf-8') as f:
+        with open(filename, "r", encoding="utf-8") as f:
             return json.load(f)
 
 
@@ -47,9 +46,9 @@ class HH(Parser):
     """
 
     def __init__(self, file_worker):
-        self.url = 'https://api.hh.ru/vacancies'
-        self.headers = {'User-Agent': 'HH-User-Agent'}
-        self.params = {'text': '', 'page': 0, 'per_page': 100}
+        self.url = "https://api.hh.ru/vacancies"
+        self.headers = {"User-Agent": "HH-User-Agent"}
+        self.params = {"text": "", "page": 0, "per_page": 100}
         self.vacancies = []
         super().__init__(file_worker)
 
@@ -59,10 +58,10 @@ class HH(Parser):
 
         :param keyword: ключевое слово для поиска
         """
-        self.params['text'] = keyword
+        self.params["text"] = keyword
         self.vacancies = []  # очищаем список перед новой загрузкой
 
-        while self.params.get('page') < 20:  # исправлено: было != 20
+        while self.params.get("page") < 20:  # исправлено: было != 20
             response = requests.get(self.url, headers=self.headers, params=self.params)
 
             if response.status_code != 200:
@@ -70,33 +69,33 @@ class HH(Parser):
                 break
 
             data = response.json()
-            vacancies = data.get('items', [])  # если ключа 'items' нет, вернётся пустой список []
+            vacancies = data.get("items", [])  # если ключа 'items' нет, вернётся пустой список []
             # программа продолжит работу без ошибок.
 
             if not vacancies:  # если вакансий больше нет
                 break
 
             self.vacancies.extend(vacancies)
-            self.params['page'] += 1
+            self.params["page"] += 1
 
 
 # Пример использования
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Создаем экземпляр парсера
     parser = HH(None)
 
     # Загружаем вакансии по ключевому слову
-    parser.load_vacancies('Python')
+    parser.load_vacancies("Python")
 
     # Выводим количество найденных вакансий
-    print(f'Найдено вакансий: {len(parser.vacancies)}')
+    print(f"Найдено вакансий: {len(parser.vacancies)}")
 
     # Выводим первые 5 вакансий (пример структуры)
     for i, vacancy in enumerate(parser.vacancies[:5]):
         print(f'{i + 1}. {vacancy["name"]} в {vacancy["employer"]["name"]}')
         print(f'   Зарплата: {vacancy.get("salary")}')
         print(f'   Ссылка: https://hh.ru/vacancy/{vacancy["id"]}')
-        print('---')
+        print("---")
 
 # # КОД ИИ ABC+Класс
 # from abc import ABC, abstractmethod

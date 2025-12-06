@@ -69,19 +69,10 @@ class HeadHunterAPI(VacancyAPI):
         """
         self._connect()
 
-        params = {
-            "text": query,
-            "per_page": per_page,
-            "page": 0
-        }
+        params = {"text": query, "per_page": per_page, "page": 0}
 
         try:
-            response = requests.get(
-                self._base_url,
-                headers=self._headers,
-                params=params,
-                timeout=10
-            )
+            response = requests.get(self._base_url, headers=self._headers, params=params, timeout=10)
             response.raise_for_status()
             data = response.json()
             return data.get("items", [])

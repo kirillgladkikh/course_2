@@ -24,13 +24,8 @@ class HHVacancies:
         pass
 
     def add_vacancy(self, title, company, salary, experience):
-        new_vacancy = {
-            'title': title,
-            'company': company,
-            'salary': salary,
-            'experience': experience
-        }
+        new_vacancy = {"title": title, "company": company, "salary": salary, "experience": experience}
         self.vacancies.append(new_vacancy)
 
     def remove_vacancy(self, title):
-        self.vacancies = [vac for vac in self.vacancies if vac['title'] != title]
+        self.vacancies = [vac for vac in self.vacancies if vac["title"] != title]

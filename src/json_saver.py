@@ -5,6 +5,7 @@ from src.vacancy import Vacancy
 
 class AbstractFile(ABC):
     """ """
+
     # Методы добавления, записи, удаления Вакансий
     @abstractmethod
     def get_vacancies(self):

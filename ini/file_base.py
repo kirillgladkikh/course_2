@@ -9,7 +9,7 @@ class FileSaver(ABC):
     """
 
     @abstractmethod
-    def add_vacancy(self, vacancy: 'Vacancy') -> None:
+    def add_vacancy(self, vacancy: "Vacancy") -> None:
         """
         Добавляет вакансию в файл.
 
@@ -19,7 +19,7 @@ class FileSaver(ABC):
         pass
 
     @abstractmethod
-    def get_vacancies(self) -> List['Vacancy']:
+    def get_vacancies(self) -> List["Vacancy"]:
         """
         Получает все вакансии из файла.
 
@@ -29,7 +29,7 @@ class FileSaver(ABC):
         pass
 
     @abstractmethod
-    def delete_vacancy(self, vacancy: 'Vacancy') -> bool:
+    def delete_vacancy(self, vacancy: "Vacancy") -> bool:
         """
         Удаляет вакансию из файла.
 
