@@ -60,7 +60,7 @@ class HHApi(AbstractAPI):
         return vacancies
 
 
-hh = HHApi()
-vacs = hh.get_vacancies("python")
-print(vacs)
-print([vac["salary"] for vac in hh.filter_vacancies(vacs)])
+# hh = HHApi()
+# vacs = hh.get_vacancies("python")
+# print(vacs)
+# print([vac["salary"] for vac in hh.filter_vacancies(vacs)])
