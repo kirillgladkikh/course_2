@@ -1,3 +1,5 @@
+from collections import OrderedDict
+import pprint
 from src.hh_api import HHApi
 from src.vacancy import Vacancy
 from src.json_saver import JSONSaver
@@ -5,14 +7,29 @@ from src.utils import print_vacancies
 
 
 # Создание экземпляра класса для работы с API сайтов с вакансиями
-hh_api = HHApi()
-# Получение УЖЕ ОТФИЛЬТРОВАННЫХ ПОЛЕЙ (name, salary, url, description) вакансий с hh.ru в формате JSON
-hh_vacancies = hh_api.get_vacancies("Python")
-print(hh_vacancies)
+hh = HHApi()
+# Получение УЖЕ ОТФИЛЬТРОВАННЫХ ПОЛЕЙ (name, salary, url, description) вакансий с hh.ru в список словарей
+filtered_vacancies = hh.get_vacancies("python")
 
-# Выводим вакансии на экран
-vac = Vacancy(hh_vacancies)
-print(vac)
+# Вывод на экран отфильтрованного списка словарей с вакансиями полученными по api
+print("Найденные вакансии:")
+print("=" * 40)
+
+for i, vac in enumerate(filtered_vacancies, 1):
+    print(f"\n[{i}]")
+    ordered_vac = OrderedDict([
+        ("name", vac["name"]),
+        ("salary", vac["salary"]),
+        ("description", vac["description"]),
+        ("url", vac["url"])
+    ])
+    pprint.pprint(ordered_vac, indent=2, width=60)
+
+# Сохраняем отфильтрованный список словарей в JSON
+
+
+
+
 
 # # Преобразование набора данных из JSON в список объектов
 # vacancies_list = JSONSaver.write_vacancies(hh_vacancies)

@@ -30,5 +30,6 @@ class Vacancy:
         )
 
 
-vac = Vacancy("qwerty", {"from": 1, "to": 10}, 1, 1)
-print(vac)
+if __name__ == "__main__":
+    vac = Vacancy("qwerty", {"from": 1, "to": 10}, 1, 1)
+    print(vac)

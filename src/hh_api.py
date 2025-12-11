@@ -28,7 +28,7 @@ class HHApi(AbstractAPI):
 
     def get_vacancies(self, keyword):
         response = self._connect(keyword)
-        print(f'\nresponse["items"]: {response["items"]}')
+        # print(f'\nresponse["items"]: {response["items"]}')
         return self.filter_vacancies(response["items"])
 
     @staticmethod
@@ -71,19 +71,16 @@ class HHApi(AbstractAPI):
             )
         return vacancies
 
+if __name__ == "__main__":
+    hh = HHApi()
+    vacs = hh.get_vacancies("python")
 
-hh = HHApi()
-vacs = hh.get_vacancies("python")
+    print("Найденные вакансии:")
+    print("=" * 40)
 
-print("Найденные вакансии:")
-print("=" * 40)
-
-for i, vac in enumerate(vacs, 1):
-    print(f"\n[{i}]")
-    pprint.pprint(vac, indent=2, width=60)
-
-
-# print(vacs)
-# print([vac["salary"] for vac in hh.filter_vacancies(vacs)])
-
-
+    for i, vac in enumerate(vacs, 1):
+        print(f"\n[{i}]")
+        pprint.pprint(vac, indent=2, width=60)
+    #
+    # print(vacs)
+    # print([vac["salary"] for vac in hh.filter_vacancies(vacs)])
