@@ -115,18 +115,116 @@ def test_filter_vacancies_description(input_vacancies, expected_descriptions):
         assert isinstance(vacancy["description"], str)
 
 
-def test_filter_vacancies_salary():
-    pass
+@pytest.mark.parametrize(
+    "input_vacancy,expected_salary",
+    [
+        # Сценарий 1: salary присутствует и является словарём (корректный формат)
+        (
+            {
+                "name": "Dev1",
+                "salary": {
+                    "from": 100000,
+                    "to": 150000,
+                    "currency": "RUB"
+                },
+                "snippet": {"responsibility": "Писать код"},
+                "alternate_url": "https://job1"
+            },
+            {
+                "from": 100000,
+                "to": 150000,
+                "currency": "RUB"
+            }
+        ),
+
+        # Сценарий 2: salary отсутствует в вакансии
+        (
+            {
+                "name": "Dev2",
+                # salary отсутствует
+                "snippet": {"responsibility": "Тестировать"},
+                "alternate_url": "https://job2"
+            },
+            None  # Ожидаем None, если salary нет
+        ),
+
+        # Сценарий 3: salary есть, но это не словарь (например, строка)
+        # В текущем коде такая ситуация приведёт к salary_info = None
+        (
+            {
+                "name": "Dev3",
+                "salary": "от 80 000 до 120 000 руб.",  # строка
+                "snippet": {"responsibility": "Рефакторинг"},
+                "alternate_url": "https://job3"
+            },
+            None  # В текущей логике: не-словарь → salary_info = None
+        ),
+
+        # Дополнительный сценарий: salary-словарь без некоторых полей
+        (
+            {
+                "name": "Dev4",
+                "salary": {
+                    "from": 90000
+                    # "to" и "currency" отсутствуют
+                },
+                "snippet": {"responsibility": "Деплой"},
+                "alternate_url": "https://job4"
+            },
+            {
+                "from": 90000,
+                "to": None,        # отсутствует → None
+                "currency": None  # отсутствует → None
+            }
+        ),
+        (
+                {
+                    "name": "Dev4",
+                    "salary": {
+                        # "from" отсутствуют
+                        "to": 90000
+                        # "currency" отсутствуют
+                    },
+                    "snippet": {"responsibility": "Деплой"},
+                    "alternate_url": "https://job4"
+                },
+                {
+                    "from": None,  # отсутствует → None
+                    "to": 90000,
+                    "currency": None  # отсутствует → None
+                }
+        )
+    ]
+)
+def test_filter_vacancies_salary(input_vacancy, expected_salary):
+    """
+    Проверяет, как filter_vacancies обрабатывает разные варианты поля 'salary':
+    - присутствует и является словарём;
+    - отсутствует;
+    - не является словарём (например, строка).
+    """
+    # Вызываем статический метод класса
+    result = HHApi.filter_vacancies([input_vacancy])
+
+    # Проверяем, что вернулась ровно одна вакансия
+    assert len(result) == 1
+    vacancy = result[0]
+
+    # Проверяем поле 'salary'
+    assert vacancy["salary"] == expected_salary
+
+    # Дополнительно проверяем другие обязательные поля
+    assert "name" in vacancy
+    assert "description" in vacancy
+    assert "url" in vacancy
+    assert isinstance(vacancy["description"], str)
+    assert isinstance(vacancy["url"], str)
 
 # def test_filter_vacancies_name():
 #     pass
 #
 #
 
-#
-#
-# def test_filter_vacancies_description():
-#     pass
 #
 #
 # def test_filter_vacancies_url():

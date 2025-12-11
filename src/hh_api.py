@@ -46,7 +46,7 @@ class HHApi(AbstractAPI):
             ):
                 responsibility = vacancy["snippet"]["responsibility"]
 
-            # 2. Проверка поля 'salary' по трём сценариям
+            # 2. Проверка поля 'salary'
             salary_info = None
 
             # Сценарий 1: salary присутствует в вакансии
