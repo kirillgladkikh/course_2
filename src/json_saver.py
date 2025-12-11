@@ -26,13 +26,21 @@ class JSONSaver(AbstractFile):
         self._filename = path
 
     def get_vacancies(self) -> list[Vacancy]:
-        """ """
-        with open(self._filename, encoding="utf-8") as f:
-            data = json.load(f)
+        """
+        Возвращает список объектов Vacancy из JSON‑файла.
+        Если файл не существует или пуст — возвращает пустой список.
+        """
+        try:
+            with open(self._filename, encoding="utf-8") as f:
+                data = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return []  # Возвращаем пустой список при отсутствии файла или ошибке парсинга
+
         vacancies = []
         for vacancy in data:
             vacancies.append(Vacancy(**vacancy))
         return vacancies
+
 
     def write_vacancies(self, vacancies: list[dict]):
         """
