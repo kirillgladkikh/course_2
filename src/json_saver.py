@@ -107,6 +107,28 @@ class JSONSaver(AbstractFile):
 
         return True
 
+    def filter_duplicates(self, new_vacancies: list[dict], existing_objects: list['Vacancy']) -> list[dict]:
+        """
+        Фильтрует новые вакансии, удаляя дубликаты по содержанию (name + salary + description).
+
+        Args:
+            new_vacancies: список новых вакансий (словарей)
+            existing_objects: список существующих объектов Vacancy
+
+        Returns:
+            Список вакансий без дубликатов по содержанию.
+        """
+        filtered = []
+        for new_vac in new_vacancies:
+            is_duplicate = False
+            for exist_vac in existing_objects:
+                if self._is_duplicate(new_vac, exist_vac):
+                    is_duplicate = True
+                    break
+            if not is_duplicate:
+                filtered.append(new_vac)
+        return filtered
+
     def write_vacancies(self, vacancies: list[dict]):
         """Основной метод записи вакансий с фильтрацией."""
         # 1. Получаем существующие вакансии (объекты Vacancy)

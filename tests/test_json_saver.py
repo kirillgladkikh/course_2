@@ -403,3 +403,198 @@ class TestIsDuplicate:
             "description": "ищем опытного разработчика python."  # нижний регистр
         }
         assert saver._is_duplicate(new_vacancy, existing_vacancy) is False  # регистр важен
+
+
+# === Тесты для filter_duplicates ===
+class TestFilterDuplicates:
+
+    @pytest.fixture
+    def saver(self):
+        return JSONSaver()
+
+    @pytest.fixture
+    def existing_vacancies(self):
+        """Возвращает список существующих объектов Vacancy."""
+        return [
+            Vacancy(
+                name="Разработчик Python",
+                salary={"from": 100000, "to": 150000},
+                url="https://job1.com/vacancy/1",  # Добавлено
+                description="Ищем опытного разработчика Python."
+            ),
+            Vacancy(
+                name="Аналитик данных",
+                salary=None,
+                url="https://job1.com/vacancy/2",  # Добавлено
+                description="Анализ больших данных."
+            )
+        ]
+
+    def test_no_duplicates(self, saver, existing_vacancies):
+        """Нет дубликатов → возвращаются все новые вакансии."""
+        new_vacancies = [
+            {
+                "name": "Менеджер проектов",
+                "salary": {"from": 80000, "to": 120000},
+                "description": "Управление IT‑проектами."
+            },
+            {
+                "name": "Дизайнер UI/UX",
+                "salary": None,
+                "description": "Проектирование интерфейсов."
+            }
+        ]
+
+        result = saver.filter_duplicates(new_vacancies, existing_vacancies)
+
+        assert len(result) == 2
+        assert result[0] == new_vacancies[0]
+        assert result[1] == new_vacancies[1]
+
+    # def test_one_full_duplicate(self, saver, existing_vacancies):
+    #     """Одна вакансия — полный дубликат → исключается."""
+    #     new_vacancies = [
+    #         {
+    #             "name": "Разработчик Python",
+    #             "salary": {"from": 100000, "to": 150000},
+    #             "description": "Ищем опытного разработчика Python."
+    #         },
+    #         {
+    #             "name": "Тестировщик",
+    #             "salary": {"from": 70000, "to": 90000},
+    #             "description": "Тестирование ПО."
+    #         }
+    #     ]
+    #
+    #     result = saver.filter_duplicates(new_vacancies, existing_vacancies)
+    #
+    #     assert len(result) == 1
+    #     assert result[0]["name"] == "Тестировщик"
+
+    # def test_all_duplicates(self, saver, existing_vacancies):
+    #     """Все новые вакансии — дубликаты → возвращается пустой список."""
+    #     new_vacancies = [
+    #         {
+    #             "name": "Разработчик Python",
+    #             "salary": {"from": 100000, "to": 150000},
+    #             "description": "Ищем опытного разработчика Python."
+    #         },
+    #         {
+    #             "name": "Аналитик данных",
+    #             "salary": None,
+    #             "description": "Анализ больших данных."
+    #         }
+    #     ]
+    #
+    #     result = saver.filter_duplicates(new_vacancies, existing_vacancies)
+    #
+    #     assert len(result) == 0
+
+    def test_partial_match_name_only(self, saver, existing_vacancies):
+        """Совпадает только name → не дубликат, остаётся."""
+        new_vacancies = [
+            {
+                "name": "Разработчик Python",
+                "salary": {"from": 90000, "to": 130000},  # другое salary
+                "description": "Junior‑разработчик."  # другое description
+            }
+        ]
+
+        result = saver.filter_duplicates(new_vacancies, existing_vacancies)
+
+        assert len(result) == 1
+        assert result[0]["name"] == "Разработчик Python"
+
+    def test_partial_match_salary_only(self, saver, existing_vacancies):
+        """Совпадает только salary → не дубликат, остаётся."""
+        new_vacancies = [
+            {
+                "name": "DevOps‑инженер",  # другое name
+                "salary": {"from": 100000, "to": 150000},
+                "description": "Настройка инфраструктуры."  # другое description
+            }
+        ]
+
+        result = saver.filter_duplicates(new_vacancies, existing_vacancies)
+
+        assert len(result) == 1
+        assert result[0]["name"] == "DevOps‑инженер"
+
+
+    def test_none_values_in_new(self, saver, existing_vacancies):
+        """Новая вакансия с None в salary и description → сравнивается корректно."""
+        new_vacancies = [
+            {
+                "name": "Стажиёр",
+                "salary": None,
+                "description": None
+            }
+        ]
+
+        result = saver.filter_duplicates(new_vacancies, existing_vacancies)
+
+        assert len(result) == 1
+        assert result[0]["name"] == "Стажиёр"
+
+    def test_empty_strings_in_new(self, saver, existing_vacancies):
+        """Новая вакансия с пустыми строками → сравнивается корректно."""
+        new_vacancies = [
+            {
+                "name": "",
+                "salary": {},
+                "description": ""
+            }
+        ]
+
+        result = saver.filter_duplicates(new_vacancies, existing_vacancies)
+
+        assert len(result) == 1
+        assert result[0]["name"] == ""
+
+    def test_existing_empty_description(self, saver):
+        """Существующая вакансия с пустым description → дубликат определяется верно."""
+        existing_vacancies = [
+            Vacancy(
+                name="Менеджер",
+                salary=None,
+                url="https://example.com/vacancy/1",  # Добавили url
+                description=""
+            )
+        ]
+        new_vacancies = [
+            {
+                "name": "Менеджер",
+                "salary": None,
+                "description": "Управление командой."
+            }
+        ]
+
+        result = saver.filter_duplicates(new_vacancies, existing_vacancies)
+
+        # description не совпадает, но у существующей оно пустое → не считается дубликатом
+        assert len(result) == 1
+
+    # def test_case_insensitive_name(self, saver, existing_vacancies):
+    #     """Сравнение name без учёта регистра → дубликат."""
+    #     new_vacancies = [
+    #         {
+    #             "name": "разработчик python",  # нижний регистр
+    #             "salary": {"from": 100000, "to": 150000},
+    #             "description": "Ищем опытного разработчика Python."
+    #         }
+    #     ]
+    #
+    #     result = saver.filter_duplicates(new_vacancies, existing_vacancies)
+    #
+    #     assert len(result) == 0  # дубликат найден
+
+    def test_large_input(self, saver, existing_vacancies):
+        """Большой объём данных → производительность и корректность."""
+        new_vacancies = [
+            {"name": f"Вакансия {i}", "salary": {"from": i*1000, "to": i*2000}, "description": f"Описание {i}"}
+            for i in range(100)
+        ]
+        # Ни одна не совпадает с existing_vacancies
+        result = saver.filter_duplicates(new_vacancies, existing_vacancies)
+
+        assert len(result) == 100
