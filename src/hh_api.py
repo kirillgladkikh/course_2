@@ -1,4 +1,5 @@
 import requests
+import pprint
 from abc import ABC, abstractmethod
 # from src.utils import is_field_exist, is_field_dict
 
@@ -38,9 +39,7 @@ class HHApi(AbstractAPI):
             # 1. Проверяем наличие 'snippet' и 'responsibility'
             responsibility = None
             if (
-                # is_field_exist(vacancy, "snippet") and
                 vacancy.get("snippet") and
-                # is_field_dict(vacancy, "snippet") and
                 isinstance(vacancy["snippet"], dict) and
                 "responsibility" in vacancy["snippet"]
             ):
@@ -75,5 +74,16 @@ class HHApi(AbstractAPI):
 
 hh = HHApi()
 vacs = hh.get_vacancies("python")
-print(vacs)
+
+print("Найденные вакансии:")
+print("=" * 40)
+
+for i, vac in enumerate(vacs, 1):
+    print(f"\n[{i}]")
+    pprint.pprint(vac, indent=2, width=60)
+
+
+# print(vacs)
 # print([vac["salary"] for vac in hh.filter_vacancies(vacs)])
+
+
