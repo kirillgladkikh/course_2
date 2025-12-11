@@ -79,6 +79,34 @@ class JSONSaver(AbstractFile):
 
         return filtered_vacancies
 
+    def _is_duplicate(self, new_vacancy: dict, existing_vacancy: 'Vacancy') -> bool:
+        # Сравниваем название (без учёта регистра)
+        if (new_vacancy.get("name") or "").lower() != (existing_vacancy.name or "").lower():
+            return False
+
+        # Если у новой вакансии есть salary — сравниваем
+        if "salary" in new_vacancy:
+            # Если salary в новой вакансии — None, считаем, что поля совпадают
+            if new_vacancy["salary"] is None:
+                # Проверяем, есть ли атрибут salary у существующего объекта и не None ли он
+                if hasattr(existing_vacancy, "salary") and existing_vacancy.salary is not None:
+                    return False
+            else:
+                # salary не None — проверяем поля
+                if not hasattr(existing_vacancy, "salary") or existing_vacancy.salary is None:
+                    return False
+                new_salary = new_vacancy["salary"]
+                existing_salary = existing_vacancy.salary
+                if (new_salary.get("from") != existing_salary.get("from") or
+                        new_salary.get("to") != existing_salary.get("to")):
+                    return False
+
+        # Сравниваем описание с обработкой None (без учёта регистра)
+        if (new_vacancy.get("description") or "").lower() != (existing_vacancy.description or "").lower():
+            return False
+
+        return True
+
     def write_vacancies(self, vacancies: list[dict]):
         """Основной метод записи вакансий с фильтрацией."""
         # 1. Получаем существующие вакансии (объекты Vacancy)

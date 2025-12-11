@@ -289,3 +289,117 @@ class TestFilterNewVacancies:
         existing_urls = set()
         result = saver.filter_new_vacancies(new_vacancies, existing_urls)
         assert len(result) == 0  # все считаются невалидными
+
+
+# === Тесты для _is_duplicate ===
+class TestIsDuplicate:
+
+    @pytest.fixture
+    def saver(self):
+        return JSONSaver("dummy.json")
+
+    @pytest.fixture
+    def existing_vacancy(self):
+        """Создаёт базовый объект Vacancy для тестов."""
+        return Vacancy(
+            name="Разработчик Python",
+            salary={"from": 100000, "to": 150000},
+            url="https://job1.com",
+            description="Ищем опытного разработчика Python."
+        )
+
+
+    def test_name_differs(self, saver, existing_vacancy):
+        """Название не совпадает → не дубликат (False)."""
+        new_vacancy = {
+            "name": "Аналитик данных",
+            "salary": {"from": 100000, "to": 150000},
+            "description": "Ищем опытного разработчика Python."
+        }
+        assert saver._is_duplicate(new_vacancy, existing_vacancy) is False
+
+    def test_salary_from_differs(self, saver, existing_vacancy):
+        """Отличается salary['from'] → не дубликат (False)."""
+        new_vacancy = {
+            "name": "Разработчик Python",
+            "salary": {"from": 90000, "to": 150000},
+            "description": "Ищем опытного разработчика Python."
+        }
+        assert saver._is_duplicate(new_vacancy, existing_vacancy) is False
+
+    def test_salary_to_differs(self, saver, existing_vacancy):
+        """Отличается salary['to'] → не дубликат (False)."""
+        new_vacancy = {
+            "name": "Разработчик Python",
+            "salary": {"from": 100000, "to": 140000},
+            "description": "Ищем опытного разработчика Python."
+        }
+        assert saver._is_duplicate(new_vacancy, existing_vacancy) is False
+
+    def test_salary_missing_in_new(self, saver, existing_vacancy):
+        """У новой вакансии нет salary → не сравниваем, но остальное совпадает → дубликат (True)."""
+        new_vacancy = {
+            "name": "Разработчик Python",
+            "description": "Ищем опытного разработчика Python."
+        }
+        assert saver._is_duplicate(new_vacancy, existing_vacancy) is True
+
+
+    def test_salary_missing_in_existing(self, saver):
+        """У существующей вакансии нет salary → если у новой есть, то не дубликат."""
+        existing_vacancy = Vacancy(
+            name="Разработчик Python",
+            salary=None,  # явно нет salary
+            url="https://job1.com",
+            description="Ищем опытного разработчика Python."
+        )
+        new_vacancy = {
+            "name": "Разработчик Python",
+            "salary": {"from": 100000, "to": 150000},
+            "description": "Ищем опытного разработчика Python."
+        }
+        assert saver._is_duplicate(new_vacancy, existing_vacancy) is False
+
+
+    def test_description_differs(self, saver, existing_vacancy):
+        """Описание не совпадает → не дубликат (False)."""
+        new_vacancy = {
+            "name": "Разработчик Python",
+            "salary": {"from": 100000, "to": 150000},
+            "description": "Требуется junior-разработчик."
+        }
+        assert saver._is_duplicate(new_vacancy, existing_vacancy) is False
+
+
+    def test_no_description_in_new(self, saver, existing_vacancy):
+        """У новой вакансии нет description → считается несовпадением (False)."""
+        new_vacancy = {
+            "name": "Разработчик Python",
+            "salary": {"from": 100000, "to": 150000}
+        }
+        assert saver._is_duplicate(new_vacancy, existing_vacancy) is False
+
+
+    def test_none_values(self, saver):
+        """Проверка на None в полях."""
+        existing_vacancy = Vacancy(
+            name=None,
+            salary=None,
+            url="https://job1.com",
+            description=None
+        )
+        new_vacancy = {
+            "name": None,
+            "salary": None,
+            "description": None
+        }
+        assert saver._is_duplicate(new_vacancy, existing_vacancy) is True
+
+    def test_case_sensitivity(self, saver, existing_vacancy):
+        """Сравнение чувствительно к регистру."""
+        new_vacancy = {
+            "name": "разработчик python",  # нижний регистр
+            "salary": {"from": 100000, "to": 150000},
+            "description": "ищем опытного разработчика python."  # нижний регистр
+        }
+        assert saver._is_duplicate(new_vacancy, existing_vacancy) is False  # регистр важен
