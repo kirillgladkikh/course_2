@@ -1,12 +1,13 @@
 class Vacancy:
-    __slots__ = ["name", "salary_from", "salary_to", "url", "description"]
+    __slots__ = ("name", "salary_from", "salary_to", "url", "description", "__dict__")
 
     def __init__(self, name, salary, url, description, **kwargs):
         self.name = name
         self.url = url
         self.description = description
         self._validate_salary(salary)
-        # Остальные поля (например, 'id') сохраняются, но не используются
+
+        # Сохраняем дополнительные поля
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -14,9 +15,13 @@ class Vacancy:
         if salary is None:
             self.salary_from = 0
             self.salary_to = 0
+        elif isinstance(salary, dict):
+            self.salary_from = salary.get("from", 0)
+            self.salary_to = salary.get("to", 0)
         else:
-            self.salary_from = salary.get("from", 0)  # если "from" нет — берём 0
-            self.salary_to = salary.get("to", 0)  # если "to" нет — берём 0
+            raise TypeError(
+                f"salary должен быть dict или None, получено: {type(salary).__name__}"
+            )
         #
         # if salary is None:
         #     self.salary_from = 0
