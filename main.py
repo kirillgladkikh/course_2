@@ -3,6 +3,7 @@ import pprint
 from src.hh_api import HHApi
 from src.vacancy import Vacancy
 from src.json_saver import JSONSaver
+
 from src.utils import print_vacancies
 
 
@@ -25,8 +26,28 @@ for i, vac in enumerate(filtered_vacancies, 1):
     ])
     pprint.pprint(ordered_vac, indent=2, width=60)
 
-# Сохраняем отфильтрованный список словарей в JSON
+# Формируем список словарей вакансий под формат JSON
+vacancies_for_json = []
+for vac_dict in filtered_vacancies:
+    vac = Vacancy(
+        name=vac_dict["name"],
+        salary=vac_dict["salary"],
+        url=vac_dict["url"],
+        description=vac_dict["description"]
+    )
+    vacancies_for_json.append(vac)
+# Теперь все объекты Vacancy имеют корректно обработанные поля salary_from/salary_to
 
+# Выводим vacancies_for_json на экран
+for vac in vacancies_for_json:
+    print(vac)  # Использует метод __str__
+
+# # Сохраняем отфильтрованный список словарей в JSON
+# # --- Запись в JSON-файл ---
+saver = JSONSaver("data/vacancies.json")  # Создаём экземпляр (файл сохранится в data/vacancies.json)
+saver.write_vacancies(vacancies_for_json)  # Записываем список словарей в файл
+#
+# print("\nВакансии успешно сохранены в файл data/vacancies.json")
 
 
 
