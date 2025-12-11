@@ -5,7 +5,7 @@ from src.json_saver import JSONSaver
 from src.vacancy import Vacancy
 
 
-
+# === Тесты для get_vacancies ===
 @pytest.fixture
 def temp_json_file():
     """Временный файл для тестов. Удаляется после использования."""
@@ -155,3 +155,137 @@ def test_get_vacancies_salary_none(temp_json_file, json_saver):
 
     assert vac.salary_from == 0
     assert vac.salary_to == 0
+
+
+# === Тесты для filter_new_vacancies ===
+class TestFilterNewVacancies:
+
+    @pytest.fixture
+    def saver(self):
+        return JSONSaver("dummy.json")
+
+    def test_empty_input_list(self, saver):
+        """Пустой список new_vacancies → возвращается пустой список."""
+        result = saver.filter_new_vacancies([], {"url1", "url2"})
+        assert result == []
+
+    def test_no_url_field(self, saver):
+        """Вакансии без поля "url" пропускаются."""
+        new_vacancies = [
+            {"title": "Без URL"},
+            {"name": "Другая", "url": ""},  # но тут есть url (пустой)
+            {"company": "No URL here"}
+        ]
+        existing_urls = set()
+        result = saver.filter_new_vacancies(new_vacancies, existing_urls)
+        assert len(result) == 0  # только пустые/отсутствующие url
+
+    def test_url_is_empty_string(self, saver):
+        """URL — пустая строка → вакансия пропускается."""
+        new_vacancies = [
+            {"url": "", "name": "Empty URL"},
+            {"url": "  ", "name": "Whitespace URL"},  # даже пробелы — считаем пустым
+            {"url": None, "name": "None URL"}
+        ]
+        existing_urls = set()
+        result = saver.filter_new_vacancies(new_vacancies, existing_urls)
+        assert len(result) == 0
+
+    def test_url_equals_no_link_strict(self, saver):
+        """Строгое сравнение: только "Нет ссылки" блокируется."""
+        new_vacancies = [
+            {"url": "Нет ссылки", "name": "Blocked"},
+            {"url": "Нет ссылки!", "name": "Allowed"},
+            {"url": "НЕТ ССЫЛКИ", "name": "Allowed (uppercase)"}
+        ]
+        existing_urls = set()
+        result = saver.filter_new_vacancies(new_vacancies, existing_urls)
+        assert len(result) == 2
+        assert result[0]["name"] == "Allowed"
+        assert result[1]["name"] == "Allowed (uppercase)"
+
+    def test_valid_url_not_in_existing(self, saver):
+        """Валидный URL отсутствует в existing_urls → добавляется."""
+        new_vacancies = [
+            {"url": "https://job1.com", "name": "Job 1"},
+            {"url": "https://job2.com", "name": "Job 2"}
+        ]
+        existing_urls = {"https://old.com"}
+        result = saver.filter_new_vacancies(new_vacancies, existing_urls)
+
+        assert len(result) == 2
+        assert "https://job1.com" in existing_urls
+        assert "https://job2.com" in existing_urls
+
+    def test_valid_url_already_exists(self, saver):
+        """Валидный URL уже есть в existing_urls → пропускается."""
+        new_vacancies = [
+            {"url": "https://dup.com", "name": "Duplicate"},
+            {"url": "https://new.com", "name": "New"}
+        ]
+        existing_urls = {"https://dup.com"}
+        result = saver.filter_new_vacancies(new_vacancies, existing_urls)
+        assert len(result) == 1
+        assert result[0]["name"] == "New"
+        assert "https://new.com" in existing_urls
+
+
+    def test_mixed_cases(self, saver):
+        """Смешанный набор: разные случаи в одном списке."""
+        new_vacancies = [
+            {"url": "https://valid1.com", "name": "Valid 1"},          # пройдёт
+            {"title": "No URL"},                                         # нет url → пропуск
+            {"url": "", "name": "Empty"},                              # пустой → пропуск
+            {"url": "Нет ссылки", "name": "No Link"},               # "Нет ссылки" → пропуск
+            {"url": "https://valid2.com", "name": "Valid 2"},          # пройдёт
+            {"url": "https://valid1.com", "name": "Dup"},            # дубликат → пропуск
+            {"url": "  https://spaced.com  ", "name": "Spaced"},    # с пробелами → пройдёт?
+        ]
+        existing_urls = {"https://existing.com"}
+
+        result = saver.filter_new_vacancies(new_vacancies, existing_urls)
+
+        assert len(result) == 3
+        urls_in_result = [item["url"] for item in result]
+        assert "https://valid1.com" in urls_in_result
+        assert "https://valid2.com" in urls_in_result
+        assert "  https://spaced.com  " in urls_in_result  # пробелы сохранены
+
+        # existing_urls должен обновиться
+        assert "https://valid1.com" in existing_urls
+        assert "https://valid2.com" in existing_urls
+        assert "  https://spaced.com  " in existing_urls
+
+    def test_existing_urls_modified(self, saver):
+        """Метод должен добавлять новые URL в existing_urls (передача по ссылке)."""
+        new_vacancies = [{"url": "new-url.com", "name": "New Job"}]
+        existing_urls = {"old.com"}
+
+        result = saver.filter_new_vacancies(new_vacancies, existing_urls)
+
+        assert len(result) == 1
+        assert "new-url.com" in existing_urls  # existing_urls изменён!
+        assert len(existing_urls) == 2
+
+    def test_url_with_whitespace(self, saver):
+        """URL с пробелами в начале/конце — считается валидным, если не пустой."""
+        new_vacancies = [
+            {"url": "  https://space.com  ", "name": "With Spaces"},
+            {"url": "\thttps://tab.com\n", "name": "With Tab/Newline"}
+        ]
+        existing_urls = set()
+        result = saver.filter_new_vacancies(new_vacancies, existing_urls)
+        assert len(result) == 2
+        assert "  https://space.com  " in existing_urls
+        assert "\thttps://tab.com\n" in existing_urls
+
+    def test_non_string_url(self, saver):
+        """Поле "url" не строка (например, число) → считается пустым/невалидным."""
+        new_vacancies = [
+            {"url": 123, "name": "Number URL"},
+            {"url": None, "name": "None URL"},
+            {"url": True, "name": "Boolean URL"}
+        ]
+        existing_urls = set()
+        result = saver.filter_new_vacancies(new_vacancies, existing_urls)
+        assert len(result) == 0  # все считаются невалидными
