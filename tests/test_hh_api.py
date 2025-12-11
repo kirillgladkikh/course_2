@@ -1,5 +1,5 @@
 import pytest
-from src.hh_api import filter_vacancies
+from src.hh_api import HHApi
 
 
 @pytest.mark.parametrize(
@@ -98,7 +98,7 @@ def test_filter_vacancies_description(input_vacancies, expected_descriptions):
     """
     Проверяет, что filter_vacancies корректно обрабатывает разные варианты поля 'responsibility'.
     """
-    result = filter_vacancies(input_vacancies)
+    result = HHApi.filter_vacancies(input_vacancies)  # Вызываем статический метод
 
     # Проверяем, что количество результатов совпадает
     assert len(result) == len(expected_descriptions)
@@ -115,14 +115,14 @@ def test_filter_vacancies_description(input_vacancies, expected_descriptions):
         assert isinstance(vacancy["description"], str)
 
 
-
+def test_filter_vacancies_salary():
+    pass
 
 # def test_filter_vacancies_name():
 #     pass
 #
 #
-# def test_filter_vacancies_salary():
-#     pass
+
 #
 #
 # def test_filter_vacancies_description():

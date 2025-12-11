@@ -46,21 +46,34 @@ class HHApi(AbstractAPI):
             ):
                 responsibility = vacancy["snippet"]["responsibility"]
 
+            # 2. Проверка поля 'salary' по трём сценариям
+            salary_info = None
+
+            # Сценарий 1: salary присутствует в вакансии
+            if "salary" in vacancy:
+                salary = vacancy["salary"]
+
+                # Сценарий 2: salary — словарь (корректный формат)
+                if isinstance(salary, dict):
+                    salary_info = {
+                        "from": salary.get("from"),
+                        "to": salary.get("to"),
+                        "currency": salary.get("currency")
+                    }
+
             vacancies.append(
                 {
                     "name": vacancy["name"],
-                    "salary": vacancy["salary"],
+                    "salary": salary_info,  #vacancy["salary"],
                     "description": responsibility or "Обязанности не указаны",
-                    # "description": vacancy["snippet"]["responsibility"],
                     "url": vacancy.get("alternate_url", "Нет ссылки"),  # Проверяем наличие "alternate_url"
-                    # "url": vacancy["alternate_url"]
-                    # "city": vacancy["area"]["name"]
+
                 }
             )
         return vacancies
 
 
-# hh = HHApi()
-# vacs = hh.get_vacancies("python")
-# print(vacs)
+hh = HHApi()
+vacs = hh.get_vacancies("python")
+print(vacs)
 # print([vac["salary"] for vac in hh.filter_vacancies(vacs)])
