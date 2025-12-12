@@ -57,7 +57,7 @@ def test_get_vacancies_empty_file(temp_json_file, json_saver):
 
 
 def test_get_vacancies_invalid_json(temp_json_file, json_saver):
-    """Файл с невалидным JSON → возвращается пустой список."""
+    """Файл с невалидным JSON >> возвращается пустой список."""
     with open(json_saver._filename, "w", encoding="utf-8") as f:
         f.write("не JSON")
     result = json_saver.get_vacancies()
@@ -67,7 +67,7 @@ def test_get_vacancies_invalid_json(temp_json_file, json_saver):
 
 
 def test_get_vacancies_empty_array(temp_json_file, json_saver):
-    """JSON: [] → возвращается пустой список."""
+    """JSON: [] >> возвращается пустой список."""
     temp_json_file([])
     result = json_saver.get_vacancies()
     assert result == []
@@ -75,7 +75,7 @@ def test_get_vacancies_empty_array(temp_json_file, json_saver):
 
 
 def test_get_vacancies_one_vacancy(temp_json_file, json_saver):
-    """Одна вакансия в JSON → возвращается [Vacancy] с корректными полями."""
+    """Одна вакансия в JSON >> возвращается [Vacancy] с корректными полями."""
     sample_data = [
         {
             "name": "Python-разработчик",
@@ -101,7 +101,7 @@ def test_get_vacancies_one_vacancy(temp_json_file, json_saver):
 
 
 def test_get_vacancies_multiple_vacancies(temp_json_file, json_saver):
-    """Несколько вакансий в JSON → список из N объектов Vacancy."""
+    """Несколько вакансий в JSON >> список из N объектов Vacancy."""
     sample_data = [
         {"name": "A", "salary": None, "url": "url1", "description": "Desc1"},
         {"name": "B", "salary": {"from": 50000}, "url": "url2", "description": "Desc2"},
@@ -120,7 +120,7 @@ def test_get_vacancies_multiple_vacancies(temp_json_file, json_saver):
 
 
 def test_get_vacancies_extra_fields(temp_json_file, json_saver):
-    """Дополнительные поля в JSON → сохраняются в объекте Vacancy."""
+    """Дополнительные поля в JSON >> сохраняются в объекте Vacancy."""
     sample_data = [
         {
             "name": "Test",
@@ -144,7 +144,7 @@ def test_get_vacancies_extra_fields(temp_json_file, json_saver):
 
 
 def test_get_vacancies_salary_none(temp_json_file, json_saver):
-    """salary: null в JSON → salary_from=0, salary_to=0."""
+    """salary: null в JSON >> salary_from=0, salary_to=0."""
     sample_data = [
         {"name": "No Salary", "salary": None, "url": "url", "description": "No salary info"}
     ]
@@ -165,7 +165,7 @@ class TestFilterNewVacancies:
         return JSONSaver("dummy.json")
 
     def test_empty_input_list(self, saver):
-        """Пустой список new_vacancies → возвращается пустой список."""
+        """Пустой список new_vacancies >> возвращается пустой список."""
         result = saver.filter_new_vacancies([], {"url1", "url2"})
         assert result == []
 
@@ -181,7 +181,7 @@ class TestFilterNewVacancies:
         assert len(result) == 0  # только пустые/отсутствующие url
 
     def test_url_is_empty_string(self, saver):
-        """URL — пустая строка → вакансия пропускается."""
+        """URL — пустая строка >> вакансия пропускается."""
         new_vacancies = [
             {"url": "", "name": "Empty URL"},
             {"url": "  ", "name": "Whitespace URL"},  # даже пробелы — считаем пустым
@@ -280,7 +280,7 @@ class TestFilterNewVacancies:
         assert "\thttps://tab.com\n" in existing_urls
 
     def test_non_string_url(self, saver):
-        """Поле "url" не строка (например, число) → считается пустым/невалидным."""
+        """Поле "url" не строка (например, число) >> считается пустым/невалидным."""
         new_vacancies = [
             {"url": 123, "name": "Number URL"},
             {"url": None, "name": "None URL"},
@@ -310,7 +310,7 @@ class TestIsDuplicate:
 
 
     def test_name_differs(self, saver, existing_vacancy):
-        """Название не совпадает → не дубликат (False)."""
+        """Название не совпадает >> не дубликат (False)."""
         new_vacancy = {
             "name": "Аналитик данных",
             "salary": {"from": 100000, "to": 150000},
@@ -319,7 +319,7 @@ class TestIsDuplicate:
         assert saver._is_duplicate(new_vacancy, existing_vacancy) is False
 
     def test_salary_from_differs(self, saver, existing_vacancy):
-        """Отличается salary['from'] → не дубликат (False)."""
+        """Отличается salary['from'] >> не дубликат (False)."""
         new_vacancy = {
             "name": "Разработчик Python",
             "salary": {"from": 90000, "to": 150000},
@@ -328,7 +328,7 @@ class TestIsDuplicate:
         assert saver._is_duplicate(new_vacancy, existing_vacancy) is False
 
     def test_salary_to_differs(self, saver, existing_vacancy):
-        """Отличается salary['to'] → не дубликат (False)."""
+        """Отличается salary['to'] >> не дубликат (False)."""
         new_vacancy = {
             "name": "Разработчик Python",
             "salary": {"from": 100000, "to": 140000},
@@ -337,7 +337,7 @@ class TestIsDuplicate:
         assert saver._is_duplicate(new_vacancy, existing_vacancy) is False
 
     def test_salary_missing_in_new(self, saver, existing_vacancy):
-        """У новой вакансии нет salary → не сравниваем, но остальное совпадает → дубликат (True)."""
+        """У новой вакансии нет salary >> не сравниваем, но остальное совпадает → дубликат (True)."""
         new_vacancy = {
             "name": "Разработчик Python",
             "description": "Ищем опытного разработчика Python."
@@ -346,7 +346,7 @@ class TestIsDuplicate:
 
 
     def test_salary_missing_in_existing(self, saver):
-        """У существующей вакансии нет salary → если у новой есть, то не дубликат."""
+        """У существующей вакансии нет salary >> если у новой есть, то не дубликат."""
         existing_vacancy = Vacancy(
             name="Разработчик Python",
             salary=None,  # явно нет salary
@@ -362,7 +362,7 @@ class TestIsDuplicate:
 
 
     def test_description_differs(self, saver, existing_vacancy):
-        """Описание не совпадает → не дубликат (False)."""
+        """Описание не совпадает >> не дубликат (False)."""
         new_vacancy = {
             "name": "Разработчик Python",
             "salary": {"from": 100000, "to": 150000},
@@ -372,7 +372,7 @@ class TestIsDuplicate:
 
 
     def test_no_description_in_new(self, saver, existing_vacancy):
-        """У новой вакансии нет description → считается несовпадением (False)."""
+        """У новой вакансии нет description >> считается несовпадением (False)."""
         new_vacancy = {
             "name": "Разработчик Python",
             "salary": {"from": 100000, "to": 150000}
@@ -431,7 +431,7 @@ class TestFilterDuplicates:
         ]
 
     def test_no_duplicates(self, saver, existing_vacancies):
-        """Нет дубликатов → возвращаются все новые вакансии."""
+        """Нет дубликатов >> возвращаются все новые вакансии."""
         new_vacancies = [
             {
                 "name": "Менеджер проектов",
@@ -491,7 +491,7 @@ class TestFilterDuplicates:
     #     assert len(result) == 0
 
     def test_partial_match_name_only(self, saver, existing_vacancies):
-        """Совпадает только name → не дубликат, остаётся."""
+        """Совпадает только name >> не дубликат, остаётся."""
         new_vacancies = [
             {
                 "name": "Разработчик Python",
@@ -506,7 +506,7 @@ class TestFilterDuplicates:
         assert result[0]["name"] == "Разработчик Python"
 
     def test_partial_match_salary_only(self, saver, existing_vacancies):
-        """Совпадает только salary → не дубликат, остаётся."""
+        """Совпадает только salary >> не дубликат, остаётся."""
         new_vacancies = [
             {
                 "name": "DevOps‑инженер",  # другое name
@@ -537,7 +537,7 @@ class TestFilterDuplicates:
         assert result[0]["name"] == "Стажиёр"
 
     def test_empty_strings_in_new(self, saver, existing_vacancies):
-        """Новая вакансия с пустыми строками → сравнивается корректно."""
+        """Новая вакансия с пустыми строками >> сравнивается корректно."""
         new_vacancies = [
             {
                 "name": "",
@@ -552,7 +552,7 @@ class TestFilterDuplicates:
         assert result[0]["name"] == ""
 
     def test_existing_empty_description(self, saver):
-        """Существующая вакансия с пустым description → дубликат определяется верно."""
+        """Существующая вакансия с пустым description >> дубликат определяется верно."""
         existing_vacancies = [
             Vacancy(
                 name="Менеджер",
@@ -575,7 +575,7 @@ class TestFilterDuplicates:
         assert len(result) == 1
 
     # def test_case_insensitive_name(self, saver, existing_vacancies):
-    #     """Сравнение name без учёта регистра → дубликат."""
+    #     """Сравнение name без учёта регистра >> дубликат."""
     #     new_vacancies = [
     #         {
     #             "name": "разработчик python",  # нижний регистр
@@ -589,7 +589,7 @@ class TestFilterDuplicates:
     #     assert len(result) == 0  # дубликат найден
 
     def test_large_input(self, saver, existing_vacancies):
-        """Большой объём данных → производительность и корректность."""
+        """Большой объём данных >> производительность и корректность."""
         new_vacancies = [
             {"name": f"Вакансия {i}", "salary": {"from": i*1000, "to": i*2000}, "description": f"Описание {i}"}
             for i in range(100)
