@@ -16,8 +16,15 @@ class Vacancy:
             self.salary_from = 0
             self.salary_to = 0
         elif isinstance(salary, dict):
-            self.salary_from = salary.get("from", 0)
-            self.salary_to = salary.get("to", 0)
+
+            from_value = salary.get("from")
+            self.salary_from = 0 if from_value is None else from_value
+
+            to_value = salary.get("to")
+            self.salary_to = 0 if to_value is None else to_value
+
+            # self.salary_from = salary.get("from", 0)
+            # self.salary_to = salary.get("to", 0)
         else:
             raise TypeError(
                 f"salary должен быть dict или None, получено: {type(salary).__name__}"

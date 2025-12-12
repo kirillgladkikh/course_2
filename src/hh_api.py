@@ -1,7 +1,6 @@
 import requests
 import pprint
 from abc import ABC, abstractmethod
-# from src.utils import is_field_exist, is_field_dict
 
 
 class AbstractAPI(ABC):
@@ -10,7 +9,7 @@ class AbstractAPI(ABC):
         pass
 
     @abstractmethod
-    def get_vacancies(self, keyword):
+    def hh_api_get_vacancies(self, keyword):
         pass
 
 
@@ -26,7 +25,7 @@ class HHApi(AbstractAPI):
         response.raise_for_status()
         return response.json()
 
-    def get_vacancies(self, keyword):
+    def hh_api_get_vacancies(self, keyword):
         response = self._connect(keyword)
         # print(f'\nresponse["items"]: {response["items"]}')
         return self.filter_vacancies(response["items"])

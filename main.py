@@ -9,8 +9,8 @@ from src.utils import print_vacancies
 
 # Создание экземпляра класса для работы с API сайтов с вакансиями
 hh = HHApi()
-# Получение УЖЕ ОТФИЛЬТРОВАННЫХ ПОЛЕЙ (name, salary, url, description) вакансий с hh.ru в список словарей
-filtered_vacancies = hh.get_vacancies("python")
+# Получение !!!в список словарей!!! УЖЕ ОТФИЛЬТРОВАННЫХ ПОЛЕЙ (name, salary, url, description) вакансий с hh.ru
+filtered_vacancies = hh.hh_api_get_vacancies("python")
 
 # Вывод на экран отфильтрованного списка словарей с вакансиями полученными по api
 print("Найденные вакансии:")
@@ -39,15 +39,19 @@ for vac_dict in filtered_vacancies:
 # Теперь все объекты Vacancy имеют корректно обработанные поля salary_from/salary_to
 
 # Выводим vacancies_for_json на экран
+j = 1
 for vac in vacancies_for_json:
+    print(f"[={j}=]")
+    j += 1
     print(vac)  # Использует метод __str__
+    print("-" * 10)
 
-# # Сохраняем отфильтрованный список словарей в JSON
-# # --- Запись в JSON-файл ---
-saver = JSONSaver("data/vacancies.json")  # Создаём экземпляр (файл сохранится в data/vacancies.json)
-saver.write_vacancies(vacancies_for_json)  # Записываем список словарей в файл
-#
-# print("\nВакансии успешно сохранены в файл data/vacancies.json")
+# # # Сохраняем отфильтрованный список словарей в JSON
+# # # --- Запись в JSON-файл ---
+# saver = JSONSaver("data/vacancies.json")  # Создаём экземпляр (файл сохранится в data/vacancies.json)
+# saver.write_vacancies(vacancies_for_json)  # Записываем список словарей в файл
+# #
+# # print("\nВакансии успешно сохранены в файл data/vacancies.json")
 
 
 

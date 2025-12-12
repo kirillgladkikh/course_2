@@ -28,18 +28,47 @@ class JSONSaver(AbstractFile):
     def get_vacancies(self) -> list[Vacancy]:
         """
         Возвращает список объектов Vacancy из JSON‑файла.
-        Если файл не существует или пуст — возвращает пустой список.
+        Если файл не существует или пуст — возвращает шаблон с одной пустой вакансией.
         """
         try:
             with open(self._filename, encoding="utf-8") as f:
                 data = json.load(f)
+                # Если файл существует, но пуст (например, [] или {}), считаем ошибкой
+                if not data:
+                    raise json.JSONDecodeError("Empty JSON file", "", 0)
         except (FileNotFoundError, json.JSONDecodeError):
-            return []  # Возвращаем пустой список при отсутствии файла или ошибке парсинга
+            # Возвращаем шаблон с одной пустой вакансией
+            data = [
+                {
+                    "name": "",
+                    "salary": {
+                        "from": 0,
+                        "to": 0
+                    },
+                    "url": "",
+                    "description": ""
+                }
+            ]
 
         vacancies = []
         for vacancy in data:
             vacancies.append(Vacancy(**vacancy))
         return vacancies
+
+        # """
+        # Возвращает список объектов Vacancy из JSON‑файла.
+        # Если файл не существует или пуст — возвращает пустой список.
+        # """
+        # try:
+        #     with open(self._filename, encoding="utf-8") as f:
+        #         data = json.load(f)
+        # except (FileNotFoundError, json.JSONDecodeError):
+        #     return []  # Возвращаем пустой список при отсутствии файла или ошибке парсинга
+        #
+        # vacancies = []
+        # for vacancy in data:
+        #     vacancies.append(Vacancy(**vacancy))
+        # return vacancies
 
     def filter_new_vacancies(self, new_vacancies: list[dict], existing_urls: set[str]) -> list[dict]:
         """
@@ -147,7 +176,7 @@ class JSONSaver(AbstractFile):
         updated_vacancies = [
             {
                 "name": vac.name,
-                "salary": vac.salary,
+                "salary": {"from": vac.salary_from, "to": vac.salary_to},  # исправлено! было: "salary": vac.salary,
                 "url": vac.url,
                 "description": vac.description,
                 **{k: getattr(vac, k) for k in vac.__dict__

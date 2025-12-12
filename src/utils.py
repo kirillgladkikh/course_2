@@ -6,13 +6,6 @@ def print_vacancies(vacancies: list[Vacancy]):
         print(vac)
 
 
-def is_field_exist(dictionary: dict, field: str) -> bool:
-    return dictionary.get(field)
-
-
-def is_field_dict(dictionary: dict, field: str):
-    return isinstance(dictionary["field"], dict)
-
-
-def is_sub_field_in_field():
-    pass
+def get_or_zero(dct, key):
+    value = dct.get(key)
+    return 0 if value is None else value
