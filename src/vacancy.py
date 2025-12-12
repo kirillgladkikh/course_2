@@ -1,5 +1,5 @@
 class Vacancy:
-    __slots__ = ("name", "salary_from", "salary_to", "url", "description", "__dict__")
+    __slots__ = ("name", "salary_from", "salary_to", "currency", "url", "description", "__dict__")
 
     def __init__(self, name, salary, url, description, **kwargs):
         self.name = name
@@ -15,6 +15,7 @@ class Vacancy:
         if salary is None:
             self.salary_from = 0
             self.salary_to = 0
+            self.salary_currency = None
         elif isinstance(salary, dict):
 
             from_value = salary.get("from")
@@ -23,8 +24,8 @@ class Vacancy:
             to_value = salary.get("to")
             self.salary_to = 0 if to_value is None else to_value
 
-            # self.salary_from = salary.get("from", 0)
-            # self.salary_to = salary.get("to", 0)
+            self.salary_currency = salary.get("currency")
+
         else:
             raise TypeError(
                 f"salary должен быть dict или None, получено: {type(salary).__name__}"
@@ -59,11 +60,12 @@ class Vacancy:
         return (
             f"Название вакансии: {self.name}\n"
             f"Зарплата: от {self.salary_from} до {self.salary_to}\n"
+            f"Валюта: {self.salary_currency}\n"
             f"Ссылка: {self.url}\n"
             f"Описание вакансии: {self.description}"
         )
 
 
 if __name__ == "__main__":
-    vac = Vacancy("qwerty", {"from": 1, "to": 10}, 1, 1)
+    vac = Vacancy("qwerty", {"from": 1, "to": 10, "currency": "RUR"}, 1, 1)
     print(vac)

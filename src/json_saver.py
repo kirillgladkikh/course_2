@@ -231,13 +231,14 @@ class JSONSaver(AbstractFile):
                 "name": vac.name,
                 "salary": {
                     "from": vac.salary_from,
-                    "to": vac.salary_to
+                    "to": vac.salary_to,
+                    "currency": vac.salary_currency
                 },
                 "url": vac.url,
                 "description": vac.description,
                 # Добавляем дополнительные поля (если есть)
                 **{k: getattr(vac, k) for k in vac.__dict__
-                   if k not in ["name", "salary_from", "salary_to", "url", "description"]}
+                   if k not in ["name", "salary_from", "salary_to", "salary_currency", "url", "description"]}
             })
 
         # 2) Сохраняем в файл

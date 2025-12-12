@@ -72,7 +72,7 @@ class HHApi(AbstractAPI):
 
 if __name__ == "__main__":
     hh = HHApi()
-    vacs = hh.get_vacancies("python")
+    vacs = hh.hh_api_get_vacancies("python")
 
     print("Найденные вакансии:")
     print("=" * 40)
