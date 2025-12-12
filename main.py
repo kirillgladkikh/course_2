@@ -9,10 +9,10 @@ from src.utils import print_vacancies
 
 # Создание экземпляра класса для работы с API сайтов с вакансиями
 hh = HHApi()
-# Получение !!!в список словарей!!! УЖЕ ОТФИЛЬТРОВАННЫХ ПОЛЕЙ (name, salary, url, description) вакансий с hh.ru
+# Получение filtered_vacancies: !!!список словарей!!! УЖЕ ОТФИЛЬТРОВАННЫХ ПОЛЕЙ (name, salary, url, description) вакансий с hh.ru
 filtered_vacancies = hh.hh_api_get_vacancies("python")
 
-# Вывод на экран отфильтрованного списка словарей с вакансиями полученными по api
+# Вывод на экран filtered_vacancies
 print("Найденные вакансии:")
 print("=" * 40)
 
@@ -26,7 +26,7 @@ for i, vac in enumerate(filtered_vacancies, 1):
     ])
     pprint.pprint(ordered_vac, indent=2, width=60)
 
-# Формируем список словарей вакансий под формат JSON
+# Формируем vacancies_for_json: список объектов Vacancy (не словарей!) с корректно обработанными полями salary_from/salary_to
 vacancies_for_json = []
 for vac_dict in filtered_vacancies:
     vac = Vacancy(
@@ -36,7 +36,7 @@ for vac_dict in filtered_vacancies:
         description=vac_dict["description"]
     )
     vacancies_for_json.append(vac)
-# Теперь все объекты Vacancy имеют корректно обработанные поля salary_from/salary_to
+# Теперь список объектов Vacancy (не словарей!) имеет корректно обработанные поля salary_from/salary_to
 
 # Выводим vacancies_for_json на экран
 j = 1
@@ -46,12 +46,11 @@ for vac in vacancies_for_json:
     print(vac)  # Использует метод __str__
     print("-" * 10)
 
-# # # Сохраняем отфильтрованный список словарей в JSON
-# # # --- Запись в JSON-файл ---
-# saver = JSONSaver("data/vacancies.json")  # Создаём экземпляр (файл сохранится в data/vacancies.json)
-# saver.write_vacancies(vacancies_for_json)  # Записываем список словарей в файл
-# #
-# # print("\nВакансии успешно сохранены в файл data/vacancies.json")
+# # Сохраняем vacancies_for_json в JSON
+saver = JSONSaver("data/vacancies.json")  # Создаём экземпляр (файл сохранится в data/vacancies.json)
+saver.first_save_to_json(vacancies_for_json)  # Записываем vacancies_for_json в JSON-файл (предварительно преобразуя объекты Vacancy в словари!)
+#
+# print("\nВакансии успешно сохранены в файл data/vacancies.json")
 
 
 
