@@ -49,10 +49,13 @@ class JSONSaver(AbstractFile):
             for item in data:
                 vacancies.append(
                     Vacancy(
-                        name=item["name"],
-                        salary=item.get("salary", {}),
-                        url=item["url"],
-                        description=item.get("description", "")
+                        name=item.get("name", ""),  # Значение по умолчанию
+                        salary=item.get("salary", {}),  # Значение по умолчанию
+                        # name=item["name"],
+                        # salary=item.get("salary", {}),
+                        url=item["url"],  # Обязательное поле
+                        description=item.get("description", "")  # Значение по умолчанию
+                        # description=item.get("description", "")
                     )
                 )
             return vacancies
@@ -76,7 +79,7 @@ class JSONSaver(AbstractFile):
             if vac.url not in existing_urls
         ]
 
-        # Объединяем и сохраняем
+        # Объединяем старые и новые вакансии в единый файл (без записи в JSON!)
         all_vacancies = existing_vacancies + new_vacancies
         # self._save_vacancies_to_json(all_vacancies)
 
@@ -113,37 +116,3 @@ class JSONSaver(AbstractFile):
         open(self._filename, "w").close()
 
         print(f"\nВакансии успешно удалены из {self._filename}")
-
-
-    # def first_save_to_json(self, vacancies_for_json: list[Vacancy]):
-    #     """
-    #     Сохраняет список объектов Vacancy в JSON-файл.
-    #     :param vacancies_for_json: список объектов Vacancy
-    #     1) Преобразуем объекты Vacancy в словари
-    #     2) Сохраняем в файл
-    #     """
-    #     # 1) Преобразуем объекты Vacancy в словари
-    #     data = []
-    #     for vac in vacancies_for_json:
-    #         data.append({
-    #             "name": vac.name,
-    #             "salary": {
-    #                 "from": vac.salary_from,
-    #                 "to": vac.salary_to,
-    #                 "currency": vac.salary_currency
-    #             },
-    #             "url": vac.url,
-    #             "description": vac.description,
-    #             # Добавляем дополнительные поля (если есть)
-    #             **{k: getattr(vac, k) for k in vac.__dict__
-    #                if k not in ["name", "salary_from", "salary_to", "salary_currency", "url", "description"]}
-    #         })
-    #
-    #     # 2) Сохраняем в файл
-    #     with open(self._filename, "w", encoding="utf-8") as f:
-    #         json.dump(data, f, indent=4, ensure_ascii=False)
-    #
-    #     print(f"Данные успешно сохранены в {self._filename}")
-
-
-
