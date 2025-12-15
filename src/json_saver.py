@@ -112,7 +112,7 @@ class JSONSaver(AbstractFile):
 
 
     def delete_vacancies(self):
-        """ """
+        """ на выходе - [] """
         with open(self._filename, "w", encoding="utf-8") as f:
             json.dump([], f, ensure_ascii=False, indent=2)
         print(f"\nВакансии успешно удалены из {self._filename}")
