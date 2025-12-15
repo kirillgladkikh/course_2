@@ -3,61 +3,162 @@ import pprint
 from src.hh_api import HHApi
 from src.vacancy import Vacancy
 from src.json_saver import JSONSaver
+from src.utils import input_with_default, get_valid_per_page, get_valid_top_n, get_valid_currency, vacancy_objects_for_json
+
+
 
 from src.utils import print_vacancies
 
 
-# Создание экземпляра класса для работы с API сайтов с вакансиями
-hh = HHApi()
-# Получение filtered_vacancies: !!!список словарей!!! УЖЕ ОТФИЛЬТРОВАННЫХ ПОЛЕЙ (name, salary, url, description) вакансий с hh.ru
-filtered_vacancies = hh.hh_api_get_vacancies("python")
+# # Создание экземпляра класса для работы с API сайтов с вакансиями
+# hh = HHApi()
+# # Получение filtered_vacancies: !!!список словарей!!! УЖЕ ОТФИЛЬТРОВАННЫХ ПОЛЕЙ (name, salary, url, description) вакансий с hh.ru
+# filtered_vacancies = hh.hh_api_get_vacancies("python")
+#
+# # Вывод на экран filtered_vacancies
+# print("Найденные вакансии:")
+# print("=" * 40)
+#
+# for i, vac in enumerate(filtered_vacancies, 1):
+#     print(f"\n[{i}]")
+#     ordered_vac = OrderedDict([
+#         ("name", vac["name"]),
+#         ("salary", vac["salary"]),
+#         ("description", vac["description"]),
+#         ("url", vac["url"])
+#     ])
+#     pprint.pprint(ordered_vac, indent=2, width=60)
+#
+# # Формируем vacancies_for_json: список объектов Vacancy (не словарей!) с корректно обработанными полями salary_from/salary_to
+# vacancies_for_json = []
+# for vac_dict in filtered_vacancies:
+#     vac = Vacancy(
+#         name=vac_dict["name"],
+#         salary=vac_dict["salary"],
+#         url=vac_dict["url"],
+#         description=vac_dict["description"]
+#     )
+#     vacancies_for_json.append(vac)
+# # Теперь список объектов Vacancy (не словарей!) имеет корректно обработанные поля salary_from/salary_to
+#
+# # Выводим vacancies_for_json на экран
+# j = 1
+# for vac in vacancies_for_json:
+#     print(f"[={j}=]")
+#     j += 1
+#     print(vac)  # Использует метод __str__
+#     print("-" * 10)
+#
+# # Формируем saver для последующей фильтрации и сортировки по введенным пользователей условиям
+# saver = JSONSaver("data/vacancies.json")  # Создаём экземпляр (файл сохранится в data/vacancies.json)
+#
+# # Открываем существующий JSON
+# # + Добавляем новые вакансии из vacancies_for_json
+# # + Сохраняем "старое"+"новое" в all_vacancies
+# all_vacancies = saver.add_vacancies(vacancies_for_json)
+#
+# # Записываем all_vacancies в JSON-файл (предварительно преобразуя объекты Vacancy в словари!)
+# saver.save_vacancies_to_json(all_vacancies)
 
-# Вывод на экран filtered_vacancies
-print("Найденные вакансии:")
-print("=" * 40)
+# Возможен поиск по следующим валютам:
+VALID_CURRENCY = [
+    "rur",
+    "kzt",
+    "uzs"
+]
 
-for i, vac in enumerate(filtered_vacancies, 1):
-    print(f"\n[{i}]")
-    ordered_vac = OrderedDict([
-        ("name", vac["name"]),
-        ("salary", vac["salary"]),
-        ("description", vac["description"]),
-        ("url", vac["url"])
-    ])
-    pprint.pprint(ordered_vac, indent=2, width=60)
+# Функция для взаимодействия с пользователем
+def user_interaction():
+    """ """
+    # ВВОД ПОЛЬЗОВАТЕЛЕМ ИСХОДНЫХ ДАННЫХ
 
-# Формируем vacancies_for_json: список объектов Vacancy (не словарей!) с корректно обработанными полями salary_from/salary_to
-vacancies_for_json = []
-for vac_dict in filtered_vacancies:
-    vac = Vacancy(
-        name=vac_dict["name"],
-        salary=vac_dict["salary"],
-        url=vac_dict["url"],
-        description=vac_dict["description"]
-    )
-    vacancies_for_json.append(vac)
-# Теперь список объектов Vacancy (не словарей!) имеет корректно обработанные поля salary_from/salary_to
+    # Запрашивает у пользователя необходимость очистки существующего JSON-файла Вакансий.
+    # по-умолчанию clear_json = "0"
+    clear_json = input_with_default("Очистить текущий JSON с Вакансиями? (0 - НЕТ, любой символ - ДА): ", "0")
+    print(f"clear_json = {clear_json}")
 
-# Выводим vacancies_for_json на экран
-j = 1
-for vac in vacancies_for_json:
-    print(f"[={j}=]")
-    j += 1
-    print(vac)  # Использует метод __str__
-    print("-" * 10)
+    # Запрашивает у пользователя поисковый запрос.
+    # по-умолчанию search_query = "python"
+    search_query = input_with_default("Введите поисковый запрос: ", "python").lower()
+    print(f"search_query = {search_query}")
 
-# Формируем saver для последующей фильтрации и сортировки по введенным пользователей условиям
-saver = JSONSaver("data/vacancies.json")  # Создаём экземпляр (файл сохранится в data/vacancies.json)
+    # Запрашивает у пользователя количество вакансий на 1 странице API-запроса (1–100) с валидацией.
+    # по-умолчанию per_page = 20
+    per_page = get_valid_per_page()
+    print(f"per_page = {per_page}")
 
-# Открываем существующий JSON
-# + Добавляем новые вакансии из vacancies_for_json
-# + Сохраняем "старое"+"новое" в all_vacancies
-all_vacancies = saver.add_vacancies(vacancies_for_json)
+    # Запрашивает у пользователя количество вакансий для вывода в топ N (1–100) с валидацией.
+    # по-умолчанию per_page = 20
+    top_n = get_valid_top_n()
+    print(f"top_n = {top_n}")
 
-# Записываем all_vacancies в JSON-файл (предварительно преобразуя объекты Vacancy в словари!)
-saver.save_vacancies_to_json(all_vacancies)
+    # Запрашивает у пользователя ключевые слова для фильтрации вакансий - по ВАЛЮТЕ (RUR/KZT/UZS) с валидацией.
+    # по-умолчанию per_page = 20
+    filter_currency = get_valid_currency(VALID_CURRENCY)
+    print(f"filter_currency = {filter_currency}")
 
-# print("\nОбновленный перечень Вакансий успешно сохранен в файл data/vacancies.json")
+    # -----------------filter_words = input_with_default("Введите ключевые слова для фильтрации вакансий - по описанию: ", "")
+    # -----------------print(filter_words)
+
+    # ОБРАБОТКА ЗАПРОСОВ ПОЛЬЗОВАТЕЛЯ
+
+    # ОЧИСТКА JSON - если таков выбор пользователя
+    # - cоздаём экземпляр saver (файл сохранится в data/vacancies.json)
+    saver = JSONSaver("data/vacancies.json")
+    # - очищаем JSON если таков выбор пользователя
+    if clear_json != "0":
+        saver.delete_vacancies()
+
+    # Создание экземпляра класса для работы с API сайтов с вакансиями
+    hh = HHApi()
+    # Получение filtered_vacancies: !!!список словарей!!! УЖЕ ОТФИЛЬТРОВАННЫХ ПОЛЕЙ (name, salary, url, description) вакансий с hh.ru
+    filtered_vacancies = hh.hh_api_get_vacancies(search_query, per_page)
+
+    # Формируем vacancies_for_json: список объектов Vacancy (не словарей!) с корректно обработанными полями salary_from/salary_to/currency
+    vacancies_for_json = vacancy_objects_for_json(filtered_vacancies)
+
+    # По введенным пользователей условиям: search_query, per_page
+    # - открываем существующий JSON
+    # - добавляем новые вакансии из vacancies_for_json
+    # - сохраняем "старое"+"новое" в all_vacancies
+    all_vacancies = saver.add_vacancies(vacancies_for_json)
+
+    # - записываем all_vacancies в JSON-файл (предварительно преобразуя объекты Vacancy в словари!)
+    saver.save_vacancies_to_json(all_vacancies)
+
+
+
+
+
+
+
+
+
+
+
+
+    return
+
+
+
+if __name__ == "__main__":
+    user_interaction()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

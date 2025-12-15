@@ -63,7 +63,7 @@ class JSONSaver(AbstractFile):
         except (json.JSONDecodeError, KeyError, FileNotFoundError, PermissionError) as e:
             # Логируем ошибку (опционально)
             print(f"Ошибка при чтении файла {self._filename}: {e}")
-            return []
+        return []
 
     def add_vacancies(self, vacancies_for_json: list[Vacancy]) -> list[Vacancy]:
         """Добавляет новые вакансии, избегая дубликатов по URL."""
@@ -113,6 +113,6 @@ class JSONSaver(AbstractFile):
 
     def delete_vacancies(self):
         """ """
-        open(self._filename, "w").close()
-
+        with open(self._filename, "w", encoding="utf-8") as f:
+            json.dump([], f, ensure_ascii=False, indent=2)
         print(f"\nВакансии успешно удалены из {self._filename}")

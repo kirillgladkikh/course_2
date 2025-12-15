@@ -5,28 +5,31 @@ from abc import ABC, abstractmethod
 
 class AbstractAPI(ABC):
     @abstractmethod
-    def _connect(self, keyword):
+    def _connect(self, keyword, per_page):
         pass
 
     @abstractmethod
-    def hh_api_get_vacancies(self, keyword):
+    def hh_api_get_vacancies(self, keyword: str, per_page: int = 20) -> list:
         pass
 
 
 class HHApi(AbstractAPI):
     def __init__(self):
         self.__url = "https://api.hh.ru/vacancies"
-        self.__params = {"per_page": 20}
+        # self.__params = {"per_page": 20}
+        self.__params = {}
 
-    def _connect(self, keyword):
+    def _connect(self, keyword, per_page):
+        self.__params.clear()  # Очищаем старые параметры
         self.__params["text"] = keyword
+        self.__params["per_page"] = per_page
         response = requests.get(self.__url, params=self.__params)
         # взять код через if из урока по api
         response.raise_for_status()
         return response.json()
 
-    def hh_api_get_vacancies(self, keyword):
-        response = self._connect(keyword)
+    def hh_api_get_vacancies(self, keyword: str, per_page: int = 20) -> list:
+        response = self._connect(keyword, per_page)
         # print(f'\nresponse["items"]: {response["items"]}')
         return self.filter_vacancies(response["items"])
 
