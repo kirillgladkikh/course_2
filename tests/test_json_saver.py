@@ -245,3 +245,132 @@ def test_add_vacancies_empty_new(existing_vacancies):
 
     assert len(result) == len(existing_vacancies)
     assert all(vac in result for vac in existing_vacancies)
+
+
+# === Тесты для JSONSaver::save_vacancies_to_json ===
+# Создание тестовых объектов Vacancy
+def create_test_vacancies():
+    return [
+        Vacancy(
+            name="Разработчик Python",
+            salary={"from": 100000, "to": 150000, "currency": "RUB"},
+            url="https://job1.com",
+            description="Ищем Python-разработчика"
+        ),
+        Vacancy(
+            name="Frontend-специалист",
+            salary={"from": 80000, "to": 120000, "currency": "RUB"},
+            url="https://job2.com",
+            description="Верстка и JS"
+        )
+    ]
+
+# Фикстура для временного файла
+@pytest.fixture
+def temp_file(tmp_path):
+    return tmp_path / "test_vacancies.json"
+
+# Тест на сохранение списка вакансий
+def test_save_vacancies_to_json(temp_file):
+    saver = JSONSaver(temp_file)
+    vacancies = create_test_vacancies()
+    saver.save_vacancies_to_json(vacancies)
+
+    # Проверка содержимого файла
+    with open(temp_file, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    # Сравнение с ожидаемыми данными
+    expected_data = [
+        {
+            "name": "Разработчик Python",
+            "salary": {"from": 100000, "to": 150000, "currency": "RUB"},
+            "url": "https://job1.com",
+            "description": "Ищем Python-разработчика"
+        },
+        {
+            "name": "Frontend-специалист",
+            "salary": {"from": 80000, "to": 120000, "currency": "RUB"},
+            "url": "https://job2.com",
+            "description": "Верстка и JS"
+        }
+    ]
+
+    assert data == expected_data
+
+# Тест на сохранение пустого списка
+def test_save_empty_list(temp_file):
+    """Тест на сохранение пустого списка вакансий в JSON-файл."""
+    saver = JSONSaver(temp_file)
+
+    # Вызываем метод с пустым списком
+    saver.save_vacancies_to_json([])
+
+    # Проверяем, что файл создан
+    assert temp_file.exists(), f"Файл {temp_file} не был создан"
+
+    # Проверяем содержимое файла (все операции внутри with)
+    with open(temp_file, "r", encoding="utf-8") as f:
+        # Читаем данные через json.load
+        data = json.load(f)
+        assert data == [], "Содержимое файла должно быть пустым JSON-массивом []"
+
+        # Возвращаемся к началу файла и читаем как текст
+        f.seek(0)  # Перемещаем курсор в начало файла
+        content = f.read().strip()
+        assert content == "[]", "Файл должен содержать только '[]'"
+
+
+# Тест на сохранение одной вакансии
+def test_save_single_vacancy(temp_file):
+    """Тест на сохранение одной вакансии."""
+    saver = JSONSaver(temp_file)
+
+    # Берём первую вакансию из тестовых данных
+    vacancies = [create_test_vacancies()[0]]
+
+    saver.save_vacancies_to_json(vacancies)
+
+    # Проверка содержимого файла
+    with open(temp_file, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    expected_data = [
+        {
+            "name": "Разработчик Python",
+            "salary": {"from": 100000, "to": 150000, "currency": "RUB"},
+            "url": "https://job1.com",
+            "description": "Ищем Python-разработчика"
+        }
+    ]
+
+    assert data == expected_data
+
+
+# Тест на сохранение вакансий с отсутствующими полями
+def test_save_vacancies_with_missing_fields(temp_file):
+    saver = JSONSaver(temp_file)
+    vacancies = [
+        Vacancy(
+            name="Вакансия без зарплаты",
+            salary=None,
+            url="https://job3.com",
+            description="Без указания зарплаты"
+        )
+    ]
+    saver.save_vacancies_to_json(vacancies)
+
+    # Проверка содержимого файла
+    with open(temp_file, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    expected_data = [
+        {
+            "name": "Вакансия без зарплаты",
+            "salary": {"from": 0, "to": 0, "currency": None},
+            "url": "https://job3.com",
+            "description": "Без указания зарплаты"
+        }
+    ]
+
+    assert data == expected_data
