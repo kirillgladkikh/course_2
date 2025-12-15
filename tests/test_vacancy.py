@@ -107,7 +107,7 @@ class TestVacancy:
         """__str__ возвращает корректный формат строки."""
         vac = Vacancy(
             name="Test Job",
-            salary={"from": 40000, "to": 60000},
+            salary={"from": 40000, "to": 60000, "currency": "RUB"},
             url="https://test.com",
             description="Описание"
         )
@@ -115,6 +115,7 @@ class TestVacancy:
         expected = (
             "Название вакансии: Test Job\n"
             "Зарплата: от 40000 до 60000\n"
+            "Валюта: RUB\n"
             "Ссылка: https://test.com\n"
             "Описание вакансии: Описание"
         )
