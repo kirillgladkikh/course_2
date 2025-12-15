@@ -48,14 +48,16 @@ for vac in vacancies_for_json:
 
 # Формируем saver для последующей фильтрации и сортировки по введенным пользователей условиям
 saver = JSONSaver("data/vacancies.json")  # Создаём экземпляр (файл сохранится в data/vacancies.json)
+
 # Открываем существующий JSON
 # + Добавляем новые вакансии из vacancies_for_json
 # + Сохраняем "старое"+"новое" в all_vacancies
 all_vacancies = saver.add_vacancies(vacancies_for_json)
+
 # Записываем all_vacancies в JSON-файл (предварительно преобразуя объекты Vacancy в словари!)
 saver.save_vacancies_to_json(all_vacancies)
 
-print("\nВакансии успешно сохранены в файл data/vacancies.json")
+# print("\nОбновленный перечень Вакансий успешно сохранен в файл data/vacancies.json")
 
 
 
