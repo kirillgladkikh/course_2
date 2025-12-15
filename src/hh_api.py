@@ -20,7 +20,7 @@ class HHApi(AbstractAPI):
         self.__params = {}
 
     def _connect(self, keyword, per_page):
-        self.__params.clear()  # Очищаем старые параметры
+        self.__params.clear()  # + Очищаем старые параметры
         self.__params["text"] = keyword
         self.__params["per_page"] = per_page
         response = requests.get(self.__url, params=self.__params)
