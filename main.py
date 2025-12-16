@@ -128,7 +128,7 @@ def user_interaction():
     # ФИЛЬТРУЕМ, СОРТИРУЕМ, ВЫВОДИМ ТОП ВАКАНСИЙ
 
     filtered_vacancies = filter_vacancies(all_vacancies, filter_currency)  # Оставляем только выбранную пользователем валюту зарплаты
-    debug_print_Vacancy_obj(filtered_vacancies)
+    debug_print_vacancy_obj(filtered_vacancies)
     # # Выводим список объектов Vacancy на экран - для отладки
     # j = 1
     # for vac in filtered_vacancies:
