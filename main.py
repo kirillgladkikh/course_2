@@ -118,6 +118,7 @@ def user_interaction() -> None:
 
     # НАДО ЕЩЕ СДЕЛАТЬ ОБЯЗАТЕЛЬНО !!!
     # получить вакансии с ключевым словом в описании.
+    # filtered_vacancies = filter_vacancies(vacancies_list, filter_words)
 
     ranged_vacancies = get_vacancies_by_salary(filtered_vacancies)  # Убираем из списка вакансии с нулями в зарплате
     # print_vacancy_obj(ranged_vacancies)
