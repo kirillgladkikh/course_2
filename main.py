@@ -131,7 +131,7 @@ def user_interaction() -> None:
     )  # Оставляем только выбранную пользователем валюту зарплаты
     # print_vacancy_obj(filtered_vacancies)
 
-    # НАДО ЕЩЕ СДЕЛАТЬ ОБЯЗАТЕЛЬНО !!!
+    # ------------------------------- НАДО ЕЩЕ СДЕЛАТЬ ОБЯЗАТЕЛЬНО !!!
     # получить вакансии с ключевым словом в описании.
     # filtered_vacancies = filter_vacancies(vacancies_list, filter_words)
 
