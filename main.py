@@ -79,6 +79,8 @@ def user_interaction() -> None:
     filter_currency = get_valid_currency(VALID_CURRENCY)
     print(f"filter_currency = {filter_currency}")
 
+    # НАДО ЕЩЕ СДЕЛАТЬ ОБЯЗАТЕЛЬНО !!!
+    # получить вакансии с ключевым словом в описании.
     # -----------------filter_words = input_with_default("Введите ключевые слова для фильтрации вакансий - по описанию: ", "")
     # -----------------print(filter_words)
 
@@ -113,6 +115,10 @@ def user_interaction() -> None:
 
     filtered_vacancies = filter_vacancies(all_vacancies, filter_currency)  # Оставляем только выбранную пользователем валюту зарплаты
     # print_vacancy_obj(filtered_vacancies)
+
+    # НАДО ЕЩЕ СДЕЛАТЬ ОБЯЗАТЕЛЬНО !!!
+    # получить вакансии с ключевым словом в описании.
+
     ranged_vacancies = get_vacancies_by_salary(filtered_vacancies)  # Убираем из списка вакансии с нулями в зарплате
     # print_vacancy_obj(ranged_vacancies)
     sorted_vacancies = sort_vacancies(ranged_vacancies)  # Сортируем вакансии по убыванию
