@@ -19,6 +19,7 @@ class AbstractAPI(ABC):
             Получает список вакансий по ключевому слову с указанием количества результатов на страницу.
             Должен быть реализован в дочерних классах.
     """
+
     @abstractmethod
     def _connect(self, keyword, per_page):
         """
@@ -127,14 +128,12 @@ class HHApi(AbstractAPI):
         Args:
             all_vacancies (list): Список словарей — сырые данные о вакансиях из API
 
-
         Returns:
             list: Список отфильтрованных словарей с полями:
                 - name (str): Название вакансии
                 - salary (dict or None): Информация о зарплате (from, to, currency)
                 - description (str): Обязанности (из snippet) или сообщение об отсутствии
                 - url (str): Ссылка на вакансию или сообщение об отсутствии
-
 
         Описание обработки полей:
             - name: берётся напрямую из поля "name" вакансии
@@ -148,9 +147,9 @@ class HHApi(AbstractAPI):
             # 1. Проверяем наличие 'snippet' и 'responsibility'
             responsibility = None
             if (
-                vacancy.get("snippet") and
-                isinstance(vacancy["snippet"], dict) and
-                "responsibility" in vacancy["snippet"]
+                vacancy.get("snippet")
+                and isinstance(vacancy["snippet"], dict)
+                and "responsibility" in vacancy["snippet"]
             ):
                 responsibility = vacancy["snippet"]["responsibility"]
 
@@ -166,16 +165,15 @@ class HHApi(AbstractAPI):
                     salary_info = {
                         "from": salary.get("from"),
                         "to": salary.get("to"),
-                        "currency": salary.get("currency")
+                        "currency": salary.get("currency"),
                     }
 
             vacancies.append(
                 {
                     "name": vacancy["name"],
-                    "salary": salary_info,  #vacancy["salary"],
+                    "salary": salary_info,  # vacancy["salary"],
                     "description": responsibility or "Обязанности не указаны",
                     "url": vacancy.get("alternate_url", "Нет ссылки"),  # Проверяем наличие "alternate_url"
-
                 }
             )
         return vacancies

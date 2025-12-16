@@ -1,15 +1,24 @@
 from src.hh_api import HHApi
 from src.vacancy import Vacancy
 from src.json_saver import JSONSaver
-from src.utils import print_vacancy_obj, input_with_default, get_valid_per_page, get_valid_top_n, get_valid_currency, vacancy_objects_for_json, filter_vacancies, get_vacancies_by_salary, sort_vacancies, get_top_vacancies, print_vacancy_count
+from src.utils import (
+    print_vacancy_obj,
+    input_with_default,
+    get_valid_per_page,
+    get_valid_top_n,
+    get_valid_currency,
+    vacancy_objects_for_json,
+    filter_vacancies,
+    get_vacancies_by_salary,
+    sort_vacancies,
+    get_top_vacancies,
+    print_vacancy_count,
+)
 
 
 # Возможен поиск по следующим валютам:
-VALID_CURRENCY = [
-    "rur",
-    "kzt",
-    "uzs"
-]
+VALID_CURRENCY = ["rur", "kzt", "uzs"]
+
 
 # Функция для взаимодействия с пользователем
 def user_interaction() -> None:
@@ -109,11 +118,15 @@ def user_interaction() -> None:
     all_vacancies = saver.add_vacancies(vacancies_for_json)
     # print_vacancy_obj(all_vacancies)
 
-    saver.save_vacancies_to_json(all_vacancies)  # Записываем all_vacancies в JSON-файл (предварительно преобразуя объекты Vacancy в словари!)
+    saver.save_vacancies_to_json(
+        all_vacancies
+    )  # Записываем all_vacancies в JSON-файл (предварительно преобразуя объекты Vacancy в словари!)
 
     # ФИЛЬТРУЕМ, СОРТИРУЕМ, ВЫВОДИМ ТОП ВАКАНСИЙ
 
-    filtered_vacancies = filter_vacancies(all_vacancies, filter_currency)  # Оставляем только выбранную пользователем валюту зарплаты
+    filtered_vacancies = filter_vacancies(
+        all_vacancies, filter_currency
+    )  # Оставляем только выбранную пользователем валюту зарплаты
     # print_vacancy_obj(filtered_vacancies)
 
     # НАДО ЕЩЕ СДЕЛАТЬ ОБЯЗАТЕЛЬНО !!!
@@ -126,7 +139,9 @@ def user_interaction() -> None:
     # print_vacancy_obj(sorted_vacancies)
     top_vacancies = get_top_vacancies(sorted_vacancies, top_n)  # Формируем TOP-N список вакансий
     print_vacancy_obj(top_vacancies)  # Выводим в консоль TOP-N вакансий сформированный под условия пользователя
-    print_vacancy_count(sorted_vacancies, top_n)  # Выводим в консоль сообщение о количестве ВСЕХ полученных вакансий под условия пользователя
+    print_vacancy_count(
+        sorted_vacancies, top_n
+    )  # Выводим в консоль сообщение о количестве ВСЕХ полученных вакансий под условия пользователя
 
     return
 

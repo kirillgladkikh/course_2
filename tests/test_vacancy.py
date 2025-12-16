@@ -1,6 +1,7 @@
 import pytest
 from src.vacancy import Vacancy
 
+
 # === Тесты для Vacancy::_validate_salary ===
 class TestVacancy:
     """
@@ -29,7 +30,7 @@ class TestVacancy:
             name="Python Dev",
             salary={"from": 100000, "to": 150000},
             url="https://example.com",
-            description="Разработка на Python"
+            description="Разработка на Python",
         )
 
         assert vac.name == "Python Dev"
@@ -49,12 +50,7 @@ class TestVacancy:
         Ожидаемый результат:
         При salary=None атрибуты salary_from и salary_to равны 0.
         """
-        vac = Vacancy(
-            name="No Salary",
-            salary=None,
-            url="https://example.com",
-            description="Нет зарплаты"
-        )
+        vac = Vacancy(name="No Salary", salary=None, url="https://example.com", description="Нет зарплаты")
 
         assert vac.salary_from == 0
         assert vac.salary_to == 0
@@ -73,22 +69,12 @@ class TestVacancy:
         Отсутствующий ключ ('from' или 'to') приводит к установке соответствующего атрибута в 0.
         """
         # Нет 'from'
-        vac1 = Vacancy(
-            name="Missing From",
-            salary={"to": 80000},
-            url="",
-            description=""
-        )
+        vac1 = Vacancy(name="Missing From", salary={"to": 80000}, url="", description="")
         assert vac1.salary_from == 0
         assert vac1.salary_to == 80000
 
         # Нет 'to'
-        vac2 = Vacancy(
-            name="Missing To",
-            salary={"from": 60000},
-            url="",
-            description=""
-        )
+        vac2 = Vacancy(name="Missing To", salary={"from": 60000}, url="", description="")
         assert vac2.salary_from == 60000
         assert vac2.salary_to == 0
 
@@ -103,12 +89,7 @@ class TestVacancy:
         Ожидаемый результат:
         Значения None в словаре salary приводят к установке соответствующих атрибутов в 0.
         """
-        vac = Vacancy(
-            name="None Values",
-            salary={"from": None, "to": None},
-            url="",
-            description=""
-        )
+        vac = Vacancy(name="None Values", salary={"from": None, "to": None}, url="", description="")
 
         assert vac.salary_from == 0
         assert vac.salary_to == 0
@@ -131,7 +112,7 @@ class TestVacancy:
             description="",
             city="Москва",
             experience="middle",
-            id=123
+            id=123,
         )
 
         assert hasattr(vac, "city") and vac.city == "Москва"
@@ -150,12 +131,7 @@ class TestVacancy:
         При некорректном типе salary поднимается TypeError с сообщением о требуемом типе.
         """
         with pytest.raises(TypeError) as excinfo:
-            Vacancy(
-                name="Invalid Salary",
-                salary="not a dict",
-                url="",
-                description=""
-            )
+            Vacancy(name="Invalid Salary", salary="not a dict", url="", description="")
 
         assert "salary должен быть dict или None" in str(excinfo.value)
 
@@ -192,7 +168,7 @@ class TestVacancy:
             name="Test Job",
             salary={"from": 40000, "to": 60000, "currency": "RUB"},
             url="https://test.com",
-            description="Описание"
+            description="Описание",
         )
 
         expected = (

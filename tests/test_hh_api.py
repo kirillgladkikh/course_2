@@ -12,37 +12,18 @@ from src.hh_api import HHApi
                     "name": "Dev1",
                     "salary": {"from": 100000},
                     "snippet": {"responsibility": "Писать код"},
-                    "alternate_url": "https://job1"
+                    "alternate_url": "https://job1",
                 }
             ],
-            ["Писать код"]
+            ["Писать код"],
         ),
-
         # Случай 2: snippet есть, но responsibility отсутствует
         (
-            [
-                {
-                    "name": "Dev2",
-                    "salary": {"from": 80000},
-                    "snippet": {},
-                    "alternate_url": "https://job2"
-                }
-            ],
-            ["Обязанности не указаны"]
+            [{"name": "Dev2", "salary": {"from": 80000}, "snippet": {}, "alternate_url": "https://job2"}],
+            ["Обязанности не указаны"],
         ),
-
         # Случай 3: snippet отсутствует полностью
-        (
-            [
-                {
-                    "name": "Dev3",
-                    "salary": {"from": 90000},
-                    "alternate_url": "https://job3"
-                }
-            ],
-            ["Обязанности не указаны"]
-        ),
-
+        ([{"name": "Dev3", "salary": {"from": 90000}, "alternate_url": "https://job3"}], ["Обязанности не указаны"]),
         # Случай 4: snippet есть, но не словарь (например, строка)
         (
             [
@@ -50,12 +31,11 @@ from src.hh_api import HHApi
                     "name": "Dev4",
                     "salary": {"from": 70000},
                     "snippet": "некоторая строка",
-                    "alternate_url": "https://job4"
+                    "alternate_url": "https://job4",
                 }
             ],
-            ["Обязанности не указаны"]
+            ["Обязанности не указаны"],
         ),
-
         # Случай 5: snippet — словарь, но без ключа responsibility
         (
             [
@@ -63,12 +43,11 @@ from src.hh_api import HHApi
                     "name": "Dev5",
                     "salary": {"from": 60000},
                     "snippet": {"other_key": "value"},
-                    "alternate_url": "https://job5"
+                    "alternate_url": "https://job5",
                 }
             ],
-            ["Обязанности не указаны"]
+            ["Обязанности не указаны"],
         ),
-
         # Случай 6: несколько вакансий, разные сценарии
         (
             [
@@ -76,23 +55,19 @@ from src.hh_api import HHApi
                     "name": "Dev6_1",
                     "salary": {"from": 50000},
                     "snippet": {"responsibility": "Тестировать"},
-                    "alternate_url": "https://job6_1"
+                    "alternate_url": "https://job6_1",
                 },
                 {  # нет responsibility
                     "name": "Dev6_2",
                     "salary": {"from": 40000},
                     "snippet": {},
-                    "alternate_url": "https://job6_2"
+                    "alternate_url": "https://job6_2",
                 },
-                {  # нет snippet
-                    "name": "Dev6_3",
-                    "salary": {"from": 30000},
-                    "alternate_url": "https://job6_3"
-                }
+                {"name": "Dev6_3", "salary": {"from": 30000}, "alternate_url": "https://job6_3"},  # нет snippet
             ],
-            ["Тестировать", "Обязанности не указаны", "Обязанности не указаны"]
+            ["Тестировать", "Обязанности не указаны", "Обязанности не указаны"],
         ),
-    ]
+    ],
 )
 def test_filter_vacancies_description(input_vacancies, expected_descriptions):
     """
@@ -122,44 +97,33 @@ def test_filter_vacancies_description(input_vacancies, expected_descriptions):
         (
             {
                 "name": "Dev1",
-                "salary": {
-                    "from": 100000,
-                    "to": 150000,
-                    "currency": "RUB"
-                },
+                "salary": {"from": 100000, "to": 150000, "currency": "RUB"},
                 "snippet": {"responsibility": "Писать код"},
-                "alternate_url": "https://job1"
+                "alternate_url": "https://job1",
             },
-            {
-                "from": 100000,
-                "to": 150000,
-                "currency": "RUB"
-            }
+            {"from": 100000, "to": 150000, "currency": "RUB"},
         ),
-
         # Сценарий 2: salary отсутствует в вакансии
         (
             {
                 "name": "Dev2",
                 # salary отсутствует
                 "snippet": {"responsibility": "Тестировать"},
-                "alternate_url": "https://job2"
+                "alternate_url": "https://job2",
             },
-            None  # Ожидаем None, если salary нет
+            None,  # Ожидаем None, если salary нет
         ),
-
         # Сценарий 3: salary есть, но это не словарь (например, строка)
         # В текущем коде такая ситуация приведёт к salary_info = None
         (
             {
                 "name": "Dev3",
-                "salary": "от 80 000 до 120 000 руб.",  # строка
+                "salary": "от 80000 до 120000 руб.",  # строка
                 "snippet": {"responsibility": "Рефакторинг"},
-                "alternate_url": "https://job3"
+                "alternate_url": "https://job3",
             },
-            None  # В текущей логике: не-словарь → salary_info = None
+            None,  # В текущей логике: не-словарь → salary_info = None
         ),
-
         # Дополнительный сценарий: salary-словарь без некоторых полей
         (
             {
@@ -169,32 +133,24 @@ def test_filter_vacancies_description(input_vacancies, expected_descriptions):
                     # "to" и "currency" отсутствуют
                 },
                 "snippet": {"responsibility": "Деплой"},
-                "alternate_url": "https://job4"
+                "alternate_url": "https://job4",
             },
-            {
-                "from": 90000,
-                "to": None,        # отсутствует → None
-                "currency": None  # отсутствует → None
-            }
+            {"from": 90000, "to": None, "currency": None},  # отсутствует → None  # отсутствует → None
         ),
         (
-                {
-                    "name": "Dev4",
-                    "salary": {
-                        # "from" отсутствуют
-                        "to": 90000
-                        # "currency" отсутствуют
-                    },
-                    "snippet": {"responsibility": "Деплой"},
-                    "alternate_url": "https://job4"
+            {
+                "name": "Dev4",
+                "salary": {
+                    # "from" отсутствуют
+                    "to": 90000
+                    # "currency" отсутствуют
                 },
-                {
-                    "from": None,  # отсутствует → None
-                    "to": 90000,
-                    "currency": None  # отсутствует → None
-                }
-        )
-    ]
+                "snippet": {"responsibility": "Деплой"},
+                "alternate_url": "https://job4",
+            },
+            {"from": None, "to": 90000, "currency": None},  # отсутствует → None  # отсутствует → None
+        ),
+    ],
 )
 def test_filter_vacancies_salary(input_vacancy, expected_salary):
     """

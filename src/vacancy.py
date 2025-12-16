@@ -14,9 +14,10 @@ class Vacancy:
     Примечание:
         Используется __slots__ для оптимизации памяти и ограничения набора атрибутов.
     """
+
     __slots__ = ("name", "salary_from", "salary_to", "currency", "url", "description", "__dict__")
 
-    def __init__(self, name: str, salary: dict,  url: str, description: str, **kwargs) -> None:
+    def __init__(self, name: str, salary: dict, url: str, description: str, **kwargs) -> None:
         """
         Инициализирует объект Vacancy.
 
@@ -73,9 +74,7 @@ class Vacancy:
             self.salary_currency = salary.get("currency")
 
         else:
-            raise TypeError(
-                f"salary должен быть dict или None, получено: {type(salary).__name__}"
-            )
+            raise TypeError(f"salary должен быть dict или None, получено: {type(salary).__name__}")
 
     def __lt__(self, other) -> bool:
         """

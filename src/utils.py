@@ -72,10 +72,7 @@ def get_valid_per_page() -> int:
     """
     while True:
         try:
-            per_page = int(input_with_default(
-                "Введите количество вакансий на 1 странице API-запроса (1–100): ",
-                "20"
-            ))
+            per_page = int(input_with_default("Введите количество вакансий на 1 странице API-запроса (1–100): ", "20"))
             if 1 <= per_page <= 100:
                 return per_page
             else:
@@ -123,7 +120,8 @@ def get_valid_currency(VALID_CURRENCY: list[str]) -> str:
     """
     while True:
         filter_currency = input_with_default(
-            "Введите ключевые слова для фильтрации вакансий - по ВАЛЮТЕ (RUR/KZT/UZS): ", "RUR").lower()
+            "Введите ключевые слова для фильтрации вакансий - по ВАЛЮТЕ (RUR/KZT/UZS): ", "RUR"
+        ).lower()
         if filter_currency in VALID_CURRENCY:
             break
         else:
@@ -147,10 +145,7 @@ def vacancy_objects_for_json(filtered_vacancies: list[dict]) -> list[Vacancy]:
     vacancies_for_json = []
     for vac_dict in filtered_vacancies:
         vac = Vacancy(
-            name=vac_dict["name"],
-            salary=vac_dict["salary"],
-            url=vac_dict["url"],
-            description=vac_dict["description"]
+            name=vac_dict["name"], salary=vac_dict["salary"], url=vac_dict["url"], description=vac_dict["description"]
         )
         vacancies_for_json.append(vac)
     return vacancies_for_json
@@ -175,7 +170,6 @@ def filter_vacancies(all_vacancies: list[Vacancy], filter_currency: str) -> list
         if vacancy.salary_currency == filter_currency.upper():
             filtered.append(vacancy)
     return filtered
-
 
 
 def get_vacancies_by_salary(vacancies: list[Vacancy]) -> list[Vacancy]:

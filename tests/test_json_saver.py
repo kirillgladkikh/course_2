@@ -12,6 +12,7 @@ def temp_dir(tmp_path):
     """Временная директория для тестов."""
     return tmp_path
 
+
 @pytest.fixture
 def saver(temp_dir):
     """Экземпляр JSONSaver с путём во временной директории."""
@@ -48,14 +49,14 @@ def test_load_existing_vacancies_success(saver, temp_dir):
             "name": "Разработчик Python",
             "salary": {"from": 100000, "to": 150000},
             "url": "https://job1.com",
-            "description": "Ищем Python‑разработчика"
+            "description": "Ищем Python‑разработчика",
         },
         {
             "name": "Frontend‑специалист",
             "salary": {"from": 80000, "to": 120000},
             "url": "https://job2.com",
-            "description": "Верстка и JS"
-        }
+            "description": "Верстка и JS",
+        },
     ]
     with open(saver._filename, "w", encoding="utf-8") as f:
         json.dump(test_data, f, ensure_ascii=False, indent=2)
@@ -103,6 +104,7 @@ def test_load_existing_vacancies_file_not_found(saver):
     """
     result = saver._load_existing_vacancies()
     assert result == []
+
 
 def test_load_existing_vacancies_invalid_json(saver, temp_dir):
     """
@@ -156,7 +158,7 @@ def test_load_existing_vacancies_missing_fields(saver, temp_dir):
     """
     test_data = [
         {"name": "Без зарплаты и описания", "url": "https://job3.com"},  # Нет salary, description
-        {"url": "https://job4.com", "description": "Нет названия"}  # Нет name
+        {"url": "https://job4.com", "description": "Нет названия"},  # Нет name
     ]
     with open(saver._filename, "w", encoding="utf-8") as f:
         json.dump(test_data, f, ensure_ascii=False, indent=2)
@@ -170,9 +172,8 @@ def test_load_existing_vacancies_missing_fields(saver, temp_dir):
     assert result[0].url == "https://job3.com"
     assert result[0].description == ""  # По умолчанию
     assert result[0].salary_from == 0  # По дефолту при отсутствии salary
-    assert result[0].salary_to == 0   # По дефолту
+    assert result[0].salary_to == 0  # По дефолту
     assert result[0].salary_currency is None  # По дефолту
-
 
     # Вторая вакансия: нет name, есть url и description
     assert result[1].name == ""  # По умолчанию при отсутствии
@@ -219,45 +220,23 @@ def test_load_existing_vacancies_permission_error(saver, temp_dir, mocker):
 @pytest.fixture
 def existing_vacancies():
     return [
-        Vacancy(
-            name="Вакансия 1",
-            url="url1",
-            salary={"from": 100, "to": 200},
-            description="Описание вакансии 1"
-        ),
-        Vacancy(
-            name="Вакансия 2",
-            url="url2",
-            salary={"from": 300, "to": 400},
-            description="Описание вакансии 2"
-        ),
+        Vacancy(name="Вакансия 1", url="url1", salary={"from": 100, "to": 200}, description="Описание вакансии 1"),
+        Vacancy(name="Вакансия 2", url="url2", salary={"from": 300, "to": 400}, description="Описание вакансии 2"),
     ]
+
 
 @pytest.fixture
 def new_vacancies():
     return [
-        Vacancy(
-            name="Вакансия 3",
-            url="url3",
-            salary={"from": 500, "to": 600},
-            description="Описание вакансии 3"
-        ),
-        Vacancy(
-            name="Вакансия 4",
-            url="url4",
-            salary={"from": 700, "to": 800},
-            description="Описание вакансии 4"
-        ),
+        Vacancy(name="Вакансия 3", url="url3", salary={"from": 500, "to": 600}, description="Описание вакансии 3"),
+        Vacancy(name="Вакансия 4", url="url4", salary={"from": 700, "to": 800}, description="Описание вакансии 4"),
     ]
+
 
 @pytest.fixture
 def duplicate_vacancy():
-    return Vacancy(
-        name="Вакансия 1",
-        url="url1",
-        salary={"from": 100, "to": 200},
-        description="Описание вакансии 1"
-    )
+    return Vacancy(name="Вакансия 1", url="url1", salary={"from": 100, "to": 200}, description="Описание вакансии 1")
+
 
 def test_add_vacancies_no_duplicates(existing_vacancies, new_vacancies):
     """
@@ -290,7 +269,6 @@ def test_add_vacancies_no_duplicates(existing_vacancies, new_vacancies):
     saver = JSONSaver()
     saver._load_existing_vacancies = lambda: existing_vacancies
     result = saver.add_vacancies(new_vacancies)
-
 
     assert len(result) == 4
     assert all(vac in result for vac in existing_vacancies + new_vacancies)
@@ -329,7 +307,6 @@ def test_add_vacancies_with_duplicates(existing_vacancies, duplicate_vacancy):
     saver._load_existing_vacancies = lambda: existing_vacancies
 
     result = saver.add_vacancies([duplicate_vacancy])
-
 
     assert len(result) == 2
     assert duplicate_vacancy not in result
@@ -417,20 +394,22 @@ def create_test_vacancies():
             name="Разработчик Python",
             salary={"from": 100000, "to": 150000, "currency": "RUB"},
             url="https://job1.com",
-            description="Ищем Python-разработчика"
+            description="Ищем Python-разработчика",
         ),
         Vacancy(
             name="Frontend-специалист",
             salary={"from": 80000, "to": 120000, "currency": "RUB"},
             url="https://job2.com",
-            description="Верстка и JS"
-        )
+            description="Верстка и JS",
+        ),
     ]
+
 
 # Фикстура для временного файла
 @pytest.fixture
 def temp_file(tmp_path):
     return tmp_path / "test_vacancies.json"
+
 
 # Тест на сохранение списка вакансий
 def test_save_vacancies_to_json(temp_file):
@@ -473,17 +452,18 @@ def test_save_vacancies_to_json(temp_file):
             "name": "Разработчик Python",
             "salary": {"from": 100000, "to": 150000, "currency": "RUB"},
             "url": "https://job1.com",
-            "description": "Ищем Python-разработчика"
+            "description": "Ищем Python-разработчика",
         },
         {
             "name": "Frontend-специалист",
             "salary": {"from": 80000, "to": 120000, "currency": "RUB"},
             "url": "https://job2.com",
-            "description": "Верстка и JS"
-        }
+            "description": "Верстка и JS",
+        },
     ]
 
     assert data == expected_data
+
 
 # Тест на сохранение пустого списка
 def test_save_empty_list(temp_file):
@@ -569,7 +549,7 @@ def test_save_single_vacancy(temp_file):
             "name": "Разработчик Python",
             "salary": {"from": 100000, "to": 150000, "currency": "RUB"},
             "url": "https://job1.com",
-            "description": "Ищем Python-разработчика"
+            "description": "Ищем Python-разработчика",
         }
     ]
 
@@ -601,12 +581,7 @@ def test_save_vacancies_with_missing_fields(temp_file):
     """
     saver = JSONSaver(temp_file)
     vacancies = [
-        Vacancy(
-            name="Вакансия без зарплаты",
-            salary=None,
-            url="https://job3.com",
-            description="Без указания зарплаты"
-        )
+        Vacancy(name="Вакансия без зарплаты", salary=None, url="https://job3.com", description="Без указания зарплаты")
     ]
     saver.save_vacancies_to_json(vacancies)
 
@@ -619,7 +594,7 @@ def test_save_vacancies_with_missing_fields(temp_file):
             "name": "Вакансия без зарплаты",
             "salary": {"from": 0, "to": 0, "currency": None},
             "url": "https://job3.com",
-            "description": "Без указания зарплаты"
+            "description": "Без указания зарплаты",
         }
     ]
 
