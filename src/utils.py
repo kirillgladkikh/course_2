@@ -125,11 +125,11 @@ def get_top_vacancies(sorted_vacancies: list[Vacancy], top_n: int) -> list[Vacan
     return sorted_vacancies[:top_n]
 
 
-def print_vacancy_count(top_vacancies: list[Vacancy]) -> None:
+def print_vacancy_count(sorted_vacancies: list[Vacancy], top_n: int) -> None:
     # Получаем количество доступных вакансий
-    total_available = len(top_vacancies)
+    total_available = len(sorted_vacancies)
 
     # Выводим информационное сообщение
-    print(f"Всего нашлось {total_available} вакансий под заданные условия")
+    print(f"Всего нашлось {total_available} вакансий под заданные условия.\nНа экран выведено {top_n} вакансий.")
 
     return

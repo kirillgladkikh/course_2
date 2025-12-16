@@ -1,63 +1,8 @@
-from collections import OrderedDict
-import pprint
 from src.hh_api import HHApi
 from src.vacancy import Vacancy
 from src.json_saver import JSONSaver
 from src.utils import print_vacancy_obj, input_with_default, get_valid_per_page, get_valid_top_n, get_valid_currency, vacancy_objects_for_json, filter_vacancies, get_vacancies_by_salary, sort_vacancies, get_top_vacancies, print_vacancy_count
 
-
-from src.utils import print_vacancies
-
-
-# # Создание экземпляра класса для работы с API сайтов с вакансиями
-# hh = HHApi()
-# # Получение filtered_vacancies: !!!список словарей!!! УЖЕ ОТФИЛЬТРОВАННЫХ ПОЛЕЙ (name, salary, url, description) вакансий с hh.ru
-# filtered_vacancies = hh.hh_api_get_vacancies("python")
-#
-# # Вывод на экран filtered_vacancies
-# print("Найденные вакансии:")
-# print("=" * 40)
-#
-# for i, vac in enumerate(filtered_vacancies, 1):
-#     print(f"\n[{i}]")
-#     ordered_vac = OrderedDict([
-#         ("name", vac["name"]),
-#         ("salary", vac["salary"]),
-#         ("description", vac["description"]),
-#         ("url", vac["url"])
-#     ])
-#     pprint.pprint(ordered_vac, indent=2, width=60)
-#
-# # Формируем vacancies_for_json: список объектов Vacancy (не словарей!) с корректно обработанными полями salary_from/salary_to
-# vacancies_for_json = []
-# for vac_dict in filtered_vacancies:
-#     vac = Vacancy(
-#         name=vac_dict["name"],
-#         salary=vac_dict["salary"],
-#         url=vac_dict["url"],
-#         description=vac_dict["description"]
-#     )
-#     vacancies_for_json.append(vac)
-# # Теперь список объектов Vacancy (не словарей!) имеет корректно обработанные поля salary_from/salary_to
-#
-# # Выводим vacancies_for_json на экран
-# j = 1
-# for vac in vacancies_for_json:
-#     print(f"[={j}=]")
-#     j += 1
-#     print(vac)  # Использует метод __str__
-#     print("-" * 10)
-#
-# # Формируем saver для последующей фильтрации и сортировки по введенным пользователей условиям
-# saver = JSONSaver("data/vacancies.json")  # Создаём экземпляр (файл сохранится в data/vacancies.json)
-#
-# # Открываем существующий JSON
-# # + Добавляем новые вакансии из vacancies_for_json
-# # + Сохраняем "старое"+"новое" в all_vacancies
-# all_vacancies = saver.add_vacancies(vacancies_for_json)
-#
-# # Записываем all_vacancies в JSON-файл (предварительно преобразуя объекты Vacancy в словари!)
-# saver.save_vacancies_to_json(all_vacancies)
 
 # Возможен поиск по следующим валютам:
 VALID_CURRENCY = [
@@ -115,26 +60,28 @@ def user_interaction():
 
     # Формируем vacancies_for_json: список объектов Vacancy (не словарей!) с корректно обработанными полями salary_from/salary_to/currency
     vacancies_for_json = vacancy_objects_for_json(hh_api_filtered_vacancies)
+    # print_vacancy_obj(vacancies_for_json)
 
     # По введенным пользователей условиям: search_query, per_page
     # - открываем существующий JSON
     # - добавляем новые вакансии из vacancies_for_json
     # - сохраняем "старое"+"новое" в all_vacancies
     all_vacancies = saver.add_vacancies(vacancies_for_json)
+    # print_vacancy_obj(all_vacancies)
 
     saver.save_vacancies_to_json(all_vacancies)  # Записываем all_vacancies в JSON-файл (предварительно преобразуя объекты Vacancy в словари!)
 
     # ФИЛЬТРУЕМ, СОРТИРУЕМ, ВЫВОДИМ ТОП ВАКАНСИЙ
 
     filtered_vacancies = filter_vacancies(all_vacancies, filter_currency)  # Оставляем только выбранную пользователем валюту зарплаты
-    print_vacancy_obj(filtered_vacancies)
+    # print_vacancy_obj(filtered_vacancies)
     ranged_vacancies = get_vacancies_by_salary(filtered_vacancies)  # Убираем из списка вакансии с нулями в зарплате
-    print_vacancy_obj(ranged_vacancies)
+    # print_vacancy_obj(ranged_vacancies)
     sorted_vacancies = sort_vacancies(ranged_vacancies)  # Сортируем вакансии по убыванию
-    print_vacancy_obj(sorted_vacancies)
+    # print_vacancy_obj(sorted_vacancies)
     top_vacancies = get_top_vacancies(sorted_vacancies, top_n)  # Формируем TOP-N список вакансий
-    print_vacancy_obj(top_vacancies)  # Выводим в консоль список вакансий сформированный под условия пользователя
-    print_vacancy_count(top_vacancies)  # Выводим в консоль сообщение о количестве полученных вакансий под условия пользователя
+    print_vacancy_obj(top_vacancies)  # Выводим в консоль TOP-N вакансий сформированный под условия пользователя
+    print_vacancy_count(sorted_vacancies, top_n)  # Выводим в консоль сообщение о количестве ВСЕХ полученных вакансий под условия пользователя
 
     return
 
