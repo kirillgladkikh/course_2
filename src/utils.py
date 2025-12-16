@@ -91,3 +91,7 @@ def get_vacancies_by_salary(vacancies: list[Vacancy]) -> list[Vacancy]:
         if vacancy.salary_from > 0:
             result.append(vacancy)
     return result
+
+
+def sort_vacancies(vacancies: list[Vacancy]) -> list[Vacancy]:
+    return sorted(vacancies, reverse=True)
