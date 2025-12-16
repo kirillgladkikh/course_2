@@ -3,7 +3,7 @@ import pprint
 from src.hh_api import HHApi
 from src.vacancy import Vacancy
 from src.json_saver import JSONSaver
-from src.utils import input_with_default, get_valid_per_page, get_valid_top_n, get_valid_currency, vacancy_objects_for_json, filter_vacancies
+from src.utils import debug_print_vacancy_obj, input_with_default, get_valid_per_page, get_valid_top_n, get_valid_currency, vacancy_objects_for_json, filter_vacancies
 
 
 from src.utils import print_vacancies
@@ -128,14 +128,14 @@ def user_interaction():
     # ФИЛЬТРУЕМ, СОРТИРУЕМ, ВЫВОДИМ ТОП ВАКАНСИЙ
 
     filtered_vacancies = filter_vacancies(all_vacancies, filter_currency)  # Оставляем только выбранную пользователем валюту зарплаты
-
-    # Выводим список объектов Vacancy на экран - для отладки
-    j = 1
-    for vac in filtered_vacancies:
-        print(f"[={j}=]")
-        j += 1
-        print(vac)  # Использует метод __str__
-        print("-" * 10)
+    debug_print_Vacancy_obj(filtered_vacancies)
+    # # Выводим список объектов Vacancy на экран - для отладки
+    # j = 1
+    # for vac in filtered_vacancies:
+    #     print(f"[={j}=]")
+    #     j += 1
+    #     print(vac)  # Использует метод __str__
+    #     print("-" * 10)
 
 
     # ranged_vacancies = get_vacancies_by_salary(filtered_vacancies)  # Убираем из списка вакансии с нулями в зарплате

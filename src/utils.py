@@ -1,9 +1,22 @@
+from collections import defaultdict
+
 from src.vacancy import Vacancy
 
 
 def print_vacancies(vacancies: list[Vacancy]):
     for vac in vacancies:
         print(vac)
+
+
+def debug_print_vacancy_obj(obj_for_print: list[Vacancy]):
+    # Выводим список объектов Vacancy на экран - для отладки
+    j = 1
+    for vac in obj_for_print:
+        print(f"[={j}=]")
+        j += 1
+        print(vac)  # Использует метод __str__
+        print("-" * 10)
+    return
 
 
 def input_with_default(prompt, default):
