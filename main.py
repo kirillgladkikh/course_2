@@ -3,7 +3,7 @@ import pprint
 from src.hh_api import HHApi
 from src.vacancy import Vacancy
 from src.json_saver import JSONSaver
-from src.utils import debug_print_vacancy_obj, input_with_default, get_valid_per_page, get_valid_top_n, get_valid_currency, vacancy_objects_for_json, filter_vacancies, get_vacancies_by_salary, sort_vacancies
+from src.utils import print_vacancy_obj, input_with_default, get_valid_per_page, get_valid_top_n, get_valid_currency, vacancy_objects_for_json, filter_vacancies, get_vacancies_by_salary, sort_vacancies, get_top_vacancies, print_vacancy_count
 
 
 from src.utils import print_vacancies
@@ -128,13 +128,14 @@ def user_interaction():
     # ФИЛЬТРУЕМ, СОРТИРУЕМ, ВЫВОДИМ ТОП ВАКАНСИЙ
 
     filtered_vacancies = filter_vacancies(all_vacancies, filter_currency)  # Оставляем только выбранную пользователем валюту зарплаты
-    debug_print_vacancy_obj(filtered_vacancies)
+    print_vacancy_obj(filtered_vacancies)
     ranged_vacancies = get_vacancies_by_salary(filtered_vacancies)  # Убираем из списка вакансии с нулями в зарплате
-    debug_print_vacancy_obj(ranged_vacancies)
+    print_vacancy_obj(ranged_vacancies)
     sorted_vacancies = sort_vacancies(ranged_vacancies)  # Сортируем вакансии по убыванию
-    debug_print_vacancy_obj(sorted_vacancies)
-    # top_vacancies = get_top_vacancies(sorted_vacancies, top_n)  # Формируем TOP-N список вакансий
-    # print_vacancies(top_vacancies)  # Выводим в консоль список вакансий сформированный по запросам пользователч
+    print_vacancy_obj(sorted_vacancies)
+    top_vacancies = get_top_vacancies(sorted_vacancies, top_n)  # Формируем TOP-N список вакансий
+    print_vacancy_obj(top_vacancies)  # Выводим в консоль список вакансий сформированный под условия пользователя
+    print_vacancy_count(top_vacancies)  # Выводим в консоль сообщение о количестве полученных вакансий под условия пользователя
 
     return
 

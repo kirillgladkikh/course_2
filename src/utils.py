@@ -8,7 +8,7 @@ def print_vacancies(vacancies: list[Vacancy]):
         print(vac)
 
 
-def debug_print_vacancy_obj(obj_for_print: list[Vacancy]):
+def print_vacancy_obj(obj_for_print: list[Vacancy]):
     # Выводим список объектов Vacancy на экран - для отладки
     j = 1
     for vac in obj_for_print:
@@ -95,3 +95,41 @@ def get_vacancies_by_salary(vacancies: list[Vacancy]) -> list[Vacancy]:
 
 def sort_vacancies(vacancies: list[Vacancy]) -> list[Vacancy]:
     return sorted(vacancies, reverse=True)
+
+
+def get_top_vacancies(sorted_vacancies: list[Vacancy], top_n: int) -> list[Vacancy]:
+    """
+    Возвращает топ-N вакансий из отсортированного списка.
+
+    Args:
+        sorted_vacancies: список объектов Vacancy, предварительно отсортированный
+                    (обычно по убыванию зарплаты)
+        top_n: количество вакансий для включения в топ (целое положительное число)
+
+    Returns:
+        Список из top_n объектов Vacancy (или меньше, если исходный список короче)
+
+    Raises:
+        ValueError: если top_n отрицательное
+        TypeError: если top_n не является целым числом
+    """
+    # Проверка типов и значений
+    if not isinstance(top_n, int):
+        raise TypeError("top_n должен быть целым числом")
+
+    if top_n < 0:
+        raise ValueError("top_n не может быть отрицательным")
+
+    # Возвращаем срез списка: первые top_n элементов
+    # Если список короче top_n, вернём всё, что есть
+    return sorted_vacancies[:top_n]
+
+
+def print_vacancy_count(top_vacancies: list[Vacancy]) -> None:
+    # Получаем количество доступных вакансий
+    total_available = len(top_vacancies)
+
+    # Выводим информационное сообщение
+    print(f"Всего нашлось {total_available} вакансий под заданные условия")
+
+    return
