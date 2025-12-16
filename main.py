@@ -3,8 +3,7 @@ import pprint
 from src.hh_api import HHApi
 from src.vacancy import Vacancy
 from src.json_saver import JSONSaver
-from src.utils import input_with_default, get_valid_per_page, get_valid_top_n, get_valid_currency, vacancy_objects_for_json
-
+from src.utils import input_with_default, get_valid_per_page, get_valid_top_n, get_valid_currency, vacancy_objects_for_json, filter_vacancies
 
 
 from src.utils import print_vacancies
@@ -112,10 +111,10 @@ def user_interaction():
     # Создание экземпляра класса для работы с API сайтов с вакансиями
     hh = HHApi()
     # Получение filtered_vacancies: !!!список словарей!!! УЖЕ ОТФИЛЬТРОВАННЫХ ПОЛЕЙ (name, salary, url, description) вакансий с hh.ru
-    filtered_vacancies = hh.hh_api_get_vacancies(search_query, per_page)
+    hh_api_filtered_vacancies = hh.hh_api_get_vacancies(search_query, per_page)
 
     # Формируем vacancies_for_json: список объектов Vacancy (не словарей!) с корректно обработанными полями salary_from/salary_to/currency
-    vacancies_for_json = vacancy_objects_for_json(filtered_vacancies)
+    vacancies_for_json = vacancy_objects_for_json(hh_api_filtered_vacancies)
 
     # По введенным пользователей условиям: search_query, per_page
     # - открываем существующий JSON
@@ -126,19 +125,25 @@ def user_interaction():
     # - записываем all_vacancies в JSON-файл (предварительно преобразуя объекты Vacancy в словари!)
     saver.save_vacancies_to_json(all_vacancies)
 
+    # ФИЛЬТРУЕМ, СОРТИРУЕМ, ВЫВОДИМ ТОП ВАКАНСИЙ
+
+    filtered_vacancies = filter_vacancies(all_vacancies, filter_currency)  # Оставляем только выбранную пользователем валюту зарплаты
+
+    # Выводим список объектов Vacancy на экран - для отладки
+    j = 1
+    for vac in filtered_vacancies:
+        print(f"[={j}=]")
+        j += 1
+        print(vac)  # Использует метод __str__
+        print("-" * 10)
 
 
-
-
-
-
-
-
-
-
+    # ranged_vacancies = get_vacancies_by_salary(filtered_vacancies)  # Убираем из списка вакансии с нулями в зарплате
+    # sorted_vacancies = sort_vacancies(ranged_vacancies)  # Сортируем вакансии по убыванию
+    # top_vacancies = get_top_vacancies(sorted_vacancies, top_n)  # Формируем TOP-N список вакансий
+    # print_vacancies(top_vacancies)  # Выводим в консоль список вакансий сформированный по запросам пользователч
 
     return
-
 
 
 if __name__ == "__main__":

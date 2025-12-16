@@ -61,3 +61,11 @@ def vacancy_objects_for_json(filtered_vacancies: list) -> list:
         vacancies_for_json.append(vac)
     return vacancies_for_json
     # Теперь список объектов Vacancy (не словарей!) имеет корректно обработанные поля salary_from/salary_to
+
+
+def filter_vacancies(all_vacancies: list[Vacancy], filter_currency: str) -> list[Vacancy]:
+    filtered = []
+    for vacancy in all_vacancies:
+        if vacancy.salary_currency == filter_currency.upper():
+            filtered.append(vacancy)
+    return filtered
