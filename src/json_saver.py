@@ -29,11 +29,11 @@ class AbstractFile(ABC):
     def add_vacancies(self, vacancies: list[Vacancy]) -> list[Vacancy]:
         pass
 
-    def save_vacancies_to_json(self, vacancies: list[Vacancy]):
+    def save_vacancies_to_json(self, vacancies: list[Vacancy]) -> None:
         pass
 
     @abstractmethod
-    def delete_vacancies(self):
+    def delete_vacancies(self) -> None:
         pass
 
 

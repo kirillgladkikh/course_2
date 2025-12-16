@@ -1,5 +1,5 @@
 from src.hh_api import HHApi
-from src.vacancy import Vacancy
+# from src.vacancy import Vacancy
 from src.json_saver import JSONSaver
 from src.utils import (
     print_vacancy_obj,
@@ -104,10 +104,12 @@ def user_interaction() -> None:
 
     # Создание экземпляра класса для работы с API сайтов с вакансиями
     hh = HHApi()
-    # Получение filtered_vacancies: !!!список словарей!!! УЖЕ ОТФИЛЬТРОВАННЫХ ПОЛЕЙ (name, salary, url, description) вакансий с hh.ru
+    # Получение filtered_vacancies: !!!список словарей!!!
+    # УЖЕ ОТФИЛЬТРОВАННЫХ ПОЛЕЙ (name, salary, url, description) вакансий с hh.ru
     hh_api_filtered_vacancies = hh.hh_api_get_vacancies(search_query, per_page)
 
-    # Формируем vacancies_for_json: список объектов Vacancy (не словарей!) с корректно обработанными полями salary_from/salary_to/currency
+    # Формируем vacancies_for_json: список объектов Vacancy (не словарей!)
+    # с корректно обработанными полями salary_from/salary_to/currency
     vacancies_for_json = vacancy_objects_for_json(hh_api_filtered_vacancies)
     # print_vacancy_obj(vacancies_for_json)
 

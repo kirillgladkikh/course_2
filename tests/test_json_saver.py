@@ -1,6 +1,6 @@
 import pytest
 import json
-from pathlib import Path
+# from pathlib import Path
 from src.vacancy import Vacancy
 from src.json_saver import JSONSaver
 
@@ -284,7 +284,8 @@ def test_add_vacancies_with_duplicates(existing_vacancies, duplicate_vacancy):
     - Ожидается, что дубликат не будет добавлен в итоговый список.
 
     Условия теста:
-    - JSONSaver инициализируется и настраивается так, чтобы возвращать существующие вакансии через _load_existing_vacancies.
+    - JSONSaver инициализируется и настраивается так, чтобы возвращать существующие вакансии
+      через _load_existing_vacancies.
     - В метод add_vacancies передаётся список из одной вакансии-дубликата.
 
     Ожидаемый результат:
