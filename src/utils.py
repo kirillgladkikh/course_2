@@ -82,3 +82,12 @@ def filter_vacancies(all_vacancies: list[Vacancy], filter_currency: str) -> list
         if vacancy.salary_currency == filter_currency.upper():
             filtered.append(vacancy)
     return filtered
+
+
+
+def get_vacancies_by_salary(vacancies: list[Vacancy]) -> list[Vacancy]:
+    result = []
+    for vacancy in vacancies:
+        if vacancy.salary_from > 0:
+            result.append(vacancy)
+    return result
