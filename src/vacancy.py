@@ -16,7 +16,7 @@ class Vacancy:
     """
     __slots__ = ("name", "salary_from", "salary_to", "currency", "url", "description", "__dict__")
 
-    def __init__(self, name, salary, url, description, **kwargs):
+    def __init__(self, name: str, salary: dict,  url: str, description: str, **kwargs) -> None:
         """
         Инициализирует объект Vacancy.
 
@@ -43,7 +43,7 @@ class Vacancy:
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def _validate_salary(self, salary: dict):
+    def _validate_salary(self, salary: dict) -> None:
         """
         Проверяет и обрабатывает данные о зарплате, устанавливая соответствующие атрибуты.
 
@@ -77,7 +77,7 @@ class Vacancy:
                 f"salary должен быть dict или None, получено: {type(salary).__name__}"
             )
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         """
         Определяет поведение оператора «меньше» (<) для сравнения вакансий по нижней границе зарплаты.
 
@@ -92,7 +92,7 @@ class Vacancy:
         """
         return self.salary_from < other.salary_from
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Возвращает строковое представление вакансии в читаемом формате.
 

@@ -39,7 +39,7 @@ def print_vacancy_obj(obj_for_print: list[Vacancy]) -> None:
     return
 
 
-def input_with_default(prompt, default):
+def input_with_default(prompt: str, default: str) -> str:
     """
     Запрашивает у пользователя ввод с возможностью использования значения по умолчанию.
 
@@ -56,7 +56,7 @@ def input_with_default(prompt, default):
     return user_input if user_input else default
 
 
-def get_valid_per_page():
+def get_valid_per_page() -> int:
     """
     Запрашивает у пользователя количество вакансий на странице (1–100) с валидацией ввода.
 
@@ -85,7 +85,7 @@ def get_valid_per_page():
     return per_page
 
 
-def get_valid_top_n():
+def get_valid_top_n() -> int:
     """
     Запрашивает у пользователя количество вакансий для вывода в топ N (1–100).
 
@@ -108,7 +108,7 @@ def get_valid_top_n():
     return top_n
 
 
-def get_valid_currency(VALID_CURRENCY: list):
+def get_valid_currency(VALID_CURRENCY: list[str]) -> str:
     """
     Запрашивает у пользователя валюту для фильтрации вакансий.
 
@@ -131,7 +131,7 @@ def get_valid_currency(VALID_CURRENCY: list):
     return filter_currency.upper()
 
 
-def vacancy_objects_for_json(filtered_vacancies: list) -> list:
+def vacancy_objects_for_json(filtered_vacancies: list[dict]) -> list[Vacancy]:
     """
     Преобразует список словарей вакансий в список объектов Vacancy.
 

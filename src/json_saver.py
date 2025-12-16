@@ -50,7 +50,7 @@ class JSONSaver(AbstractFile):
         _filename (Path): путь к JSON‑файлу с вакансиями.
     """
 
-    def __init__(self, path="data/vacancies.json"):
+    def __init__(self, path: str = "data/vacancies.json") -> None:
         """
         Инициализирует экземпляр JSONSaver.
 
@@ -141,7 +141,7 @@ class JSONSaver(AbstractFile):
         return all_vacancies
 
 
-    def save_vacancies_to_json(self, vacancies: list[Vacancy]):
+    def save_vacancies_to_json(self, vacancies: list[Vacancy]) -> None:
         """
         Сохраняет список объектов Vacancy в JSON‑файл.
 
@@ -182,7 +182,7 @@ class JSONSaver(AbstractFile):
         print(f"\nОбновленный перечень Вакансий успешно сохранен в файл: {self._filename}")
 
 
-    def delete_vacancies(self):
+    def delete_vacancies(self) -> None:
         """
         Очищает JSON‑файл, записывая в него пустой список.
 
