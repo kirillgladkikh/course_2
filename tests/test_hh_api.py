@@ -219,16 +219,3 @@ def test_filter_vacancies_salary(input_vacancy, expected_salary):
     assert "url" in vacancy
     assert isinstance(vacancy["description"], str)
     assert isinstance(vacancy["url"], str)
-
-# def test_filter_vacancies_name():
-#     pass
-#
-#
-
-#
-#
-# def test_filter_vacancies_url():
-#     pass
-
-
-

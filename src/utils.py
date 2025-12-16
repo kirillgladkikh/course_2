@@ -3,12 +3,32 @@ from collections import defaultdict
 from src.vacancy import Vacancy
 
 
-def print_vacancies(vacancies: list[Vacancy]):
+def print_vacancies(vacancies: list[Vacancy]) -> None:
+    """
+    Выводит на экран список объектов Vacancy.
+
+    Args:
+        vacancies: список объектов Vacancy для вывода
+    """
     for vac in vacancies:
         print(vac)
 
 
-def print_vacancy_obj(obj_for_print: list[Vacancy]):
+def print_vacancy_obj(obj_for_print: list[Vacancy]) -> None:
+    """
+    Выводит список объектов Vacancy на экран с нумерацией и разделителями (для отладки).
+
+    Для каждой вакансии:
+    - выводит номер в формате [={номер}=]
+    - вызывает метод __str__ объекта Vacancy
+    - добавляет разделитель из 10 символов "-"
+
+    Args:
+        obj_for_print: список объектов Vacancy для вывода
+
+    Returns:
+        None
+    """
     # Выводим список объектов Vacancy на экран - для отладки
     j = 1
     for vac in obj_for_print:
@@ -20,12 +40,36 @@ def print_vacancy_obj(obj_for_print: list[Vacancy]):
 
 
 def input_with_default(prompt, default):
+    """
+    Запрашивает у пользователя ввод с возможностью использования значения по умолчанию.
+
+    Если пользователь ничего не вводит (пустая строка), возвращается значение default.
+
+    Args:
+        prompt: текст приглашения к вводу
+        default: значение по умолчанию (используется при пустом вводе)
+
+    Returns:
+        Строка — введённое пользователем значение или default
+    """
     user_input = input(prompt)
     return user_input if user_input else default
 
 
 def get_valid_per_page():
-    """Запрашивает у пользователя количество вакансий на странице (1–100) с валидацией."""
+    """
+    Запрашивает у пользователя количество вакансий на странице (1–100) с валидацией ввода.
+
+    Повторяет запрос до получения корректного значения:
+    - целое число в диапазоне 1–100
+    - при ошибке выводит сообщение и запрашивает повторно
+
+    Returns:
+        Целое число от 1 до 100 — количество вакансий на странице
+
+    Raises:
+        ValueError: если введённое значение не является числом
+    """
     while True:
         try:
             per_page = int(input_with_default(
@@ -42,6 +86,19 @@ def get_valid_per_page():
 
 
 def get_valid_top_n():
+    """
+    Запрашивает у пользователя количество вакансий для вывода в топ N (1–100).
+
+    Повторяет запрос до получения корректного значения:
+    - целое число в диапазоне 1–100
+    - при ошибке выводит сообщение и запрашивает повторно
+
+    Returns:
+        Целое число от 1 до 100 — количество вакансий для топ-вывода
+
+    Raises:
+        ValueError: если введённое значение не является числом
+    """
     while True:
         top_n = int(input_with_default("Введите количество вакансий для вывода в топ N (1–100): ", "20"))
         if 1 <= top_n <= 100:
@@ -52,6 +109,18 @@ def get_valid_top_n():
 
 
 def get_valid_currency(VALID_CURRENCY: list):
+    """
+    Запрашивает у пользователя валюту для фильтрации вакансий.
+
+    Повторяет запрос до получения допустимого значения из списка VALID_CURRENCY.
+    Ввод приводится к нижнему регистру для сравнения, результат возвращается в верхнем.
+
+    Args:
+        VALID_CURRENCY: список допустимых значений валюты (например, ["RUR", "KZT", "UZS"])
+
+    Returns:
+        Строка — выбранная валюта в верхнем регистре (например, "RUR")
+    """
     while True:
         filter_currency = input_with_default(
             "Введите ключевые слова для фильтрации вакансий - по ВАЛЮТЕ (RUR/KZT/UZS): ", "RUR").lower()
@@ -63,6 +132,18 @@ def get_valid_currency(VALID_CURRENCY: list):
 
 
 def vacancy_objects_for_json(filtered_vacancies: list) -> list:
+    """
+    Преобразует список словарей вакансий в список объектов Vacancy.
+
+    Для каждого словаря в filtered_vacancies создаёт объект Vacancy,
+    передавая поля name, salary, url, description.
+
+    Args:
+        filtered_vacancies: список словарей с данными вакансий
+
+    Returns:
+        Список объектов Vacancy с корректно обработанными полями salary_from/salary_to
+    """
     vacancies_for_json = []
     for vac_dict in filtered_vacancies:
         vac = Vacancy(
@@ -77,6 +158,18 @@ def vacancy_objects_for_json(filtered_vacancies: list) -> list:
 
 
 def filter_vacancies(all_vacancies: list[Vacancy], filter_currency: str) -> list[Vacancy]:
+    """
+    Фильтрует список вакансий по валюте зарплаты.
+
+    Оставляет только вакансии, где salary_currency совпадает с filter_currency (в верхнем регистре).
+
+    Args:
+        all_vacancies: полный список объектов Vacancy
+        filter_currency: строка с кодом валюты (например, "RUR")
+
+    Returns:
+        Список объектов Vacancy, отфильтрованный по валюте
+    """
     filtered = []
     for vacancy in all_vacancies:
         if vacancy.salary_currency == filter_currency.upper():
@@ -86,6 +179,15 @@ def filter_vacancies(all_vacancies: list[Vacancy], filter_currency: str) -> list
 
 
 def get_vacancies_by_salary(vacancies: list[Vacancy]) -> list[Vacancy]:
+    """
+    Отбирает вакансии, у которых указана зарплата (salary_from > 0).
+
+    Args:
+        vacancies: список объектов Vacancy
+
+    Returns:
+        Список объектов Vacancy, у которых salary_from больше нуля
+    """
     result = []
     for vacancy in vacancies:
         if vacancy.salary_from > 0:
@@ -94,6 +196,18 @@ def get_vacancies_by_salary(vacancies: list[Vacancy]) -> list[Vacancy]:
 
 
 def sort_vacancies(vacancies: list[Vacancy]) -> list[Vacancy]:
+    """
+    Сортирует список вакансий в порядке убывания зарплаты.
+
+    Использует естественный порядок сравнения объектов Vacancy
+    (у Vacancy реализован метод __lt__ для сортировки по зарплате).
+
+    Args:
+        vacancies: список объектов Vacancy для сортировки
+
+    Returns:
+        Отсортированный список объектов Vacancy (по убыванию зарплаты)
+    """
     return sorted(vacancies, reverse=True)
 
 
@@ -103,7 +217,7 @@ def get_top_vacancies(sorted_vacancies: list[Vacancy], top_n: int) -> list[Vacan
 
     Args:
         sorted_vacancies: список объектов Vacancy, предварительно отсортированный
-                    (обычно по убыванию зарплаты)
+                    (по убыванию зарплаты)
         top_n: количество вакансий для включения в топ (целое положительное число)
 
     Returns:
@@ -126,6 +240,23 @@ def get_top_vacancies(sorted_vacancies: list[Vacancy], top_n: int) -> list[Vacan
 
 
 def print_vacancy_count(sorted_vacancies: list[Vacancy], top_n: int) -> None:
+    """
+    Выводит информацию о количестве найденных вакансий и числе вакансий отображаемых на экране.
+
+    Функция принимает отсортированный список вакансий и количество вакансий для отображения,
+    после чего печатает два сообщения:
+    - общее количество вакансий, соответствующих условиям поиска;
+    - количество вакансий, которые будут показаны пользователю.
+
+    Args:
+        sorted_vacancies (list[Vacancy]): Отсортированный список объектов Vacancy,
+            соответствующих поисковым критериям.
+        top_n (int): Количество вакансий, которые планируется отобразить пользователю
+            (например, топ‑N результатов).
+
+    Returns:
+        None: Функция не возвращает значение, только выводит информацию в консоль.
+    """
     # Получаем количество доступных вакансий
     total_available = len(sorted_vacancies)
 

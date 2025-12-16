@@ -5,20 +5,30 @@ from src.vacancy import Vacancy
 
 
 class AbstractFile(ABC):
-    """ """
+    """
+    Абстрактный базовый класс для работы с файловым хранилищем вакансий.
 
+    Определяет контракт для классов, реализующих взаимодействие с файлами,
+    содержащими данные о вакансиях. Включает методы для добавления, сохранения
+    и удаления вакансий.
+
+    Методы, помеченные @abstractmethod, обязательны для реализации
+    в дочерних классах.
+
+    Методы:
+        add_vacancies: Добавляет список вакансий в хранилище.
+            Должен быть реализован в дочернем классе.
+        save_vacancies_to_json: Сохраняет (записывает) список вакансий в JSON‑файл.
+            Реализация по умолчанию предоставляет базовую документацию.
+        delete_vacancies: Удаляет вакансии из хранилища.
+            Должен быть реализован в дочернем классе.
+    """
     # Методы добавления, записи, удаления Вакансий
     @abstractmethod
     def add_vacancies(self, vacancies: list[Vacancy]) -> list[Vacancy]:
-        """
-        Добавляет новые вакансии, исключая дубликаты (по URL или иному уникальному ключу).
-        :param vacancies: список объектов Vacancy для добавления
-        :return: объединённый список всех вакансий (старые + новые)
-        """
         pass
 
     def save_vacancies_to_json(self, vacancies: list[Vacancy]):
-        """Метод для сохранения (записи) списка Vacancy в JSON."""
         pass
 
     @abstractmethod
@@ -27,15 +37,44 @@ class AbstractFile(ABC):
 
 
 class JSONSaver(AbstractFile):
+    """
+    Класс для работы с JSON‑файлом вакансий.
+
+    Обеспечивает:
+    - загрузку существующих вакансий из файла;
+    - добавление новых вакансий с проверкой на дубликаты (по URL);
+    - сохранение списка вакансий в JSON‑файл;
+    - очистку файла (удаление всех вакансий).
+
+    Атрибуты:
+        _filename (Path): путь к JSON‑файлу с вакансиями.
+    """
+
     def __init__(self, path="data/vacancies.json"):
-        """ """
+        """
+        Инициализирует экземпляр JSONSaver.
+
+        Args:
+            path (str): путь к JSON‑файлу (по умолчанию "data/vacancies.json").
+        """
         self._filename = Path(path)  # Преобразуем в Path!
         # self._filename = path
 
     def _load_existing_vacancies(self) -> list[Vacancy]:
         """
         Читает существующие вакансии из JSON‑файла.
-        :return: список объектов Vacancy (пустой, если файла нет или он некорректен)
+
+        Если файл отсутствует или содержит некорректные данные,
+        возвращает пустой список.
+
+        Returns:
+            list[Vacancy]: список объектов Vacancy (пустой при ошибке/отсутствии файла).
+
+        Raises:
+            FileNotFoundError: если файл не найден (обрабатывается внутри метода).
+            json.JSONDecodeError: если файл содержит некорректный JSON (обрабатывается).
+            KeyError: если в данных отсутствует обязательное поле 'url' (обрабатывается).
+            PermissionError: если нет прав на чтение файла (обрабатывается).
         """
         if not self._filename.exists():
             return []
@@ -66,7 +105,23 @@ class JSONSaver(AbstractFile):
         return []
 
     def add_vacancies(self, vacancies_for_json: list[Vacancy]) -> list[Vacancy]:
-        """Добавляет новые вакансии, избегая дубликатов по URL."""
+        """
+        Добавляет новые вакансии в хранилище, исключая дубликаты по URL.
+
+        Считывает существующие вакансии из файла, сравнивает их URL с новыми,
+        и возвращает объединённый список (существующие + новые уникальные).
+
+        Фактическая запись в файл не выполняется — для этого нужно вызвать save_vacancies_to_json().
+
+        Args:
+            vacancies_for_json (list[Vacancy]): список новых объектов Vacancy для добавления.
+
+        Returns:
+            list[Vacancy]: объединённый список вакансий (существующие + новые уникальные).
+
+        Notes:
+            Дубликаты определяются по полю `url` объекта Vacancy.
+        """
         # Читаем существующие вакансии
         existing_vacancies = self._load_existing_vacancies()
 
@@ -87,7 +142,23 @@ class JSONSaver(AbstractFile):
 
 
     def save_vacancies_to_json(self, vacancies: list[Vacancy]):
-        """Метод для сохранения списка Vacancy в JSON."""
+        """
+        Сохраняет список объектов Vacancy в JSON‑файл.
+
+        Преобразует объекты Vacancy в словари, включая основные поля
+        (name, salary, url, description) и дополнительные атрибуты объекта.
+
+        Args:
+            vacancies (list[Vacancy]): список объектов Vacancy для сохранения.
+
+        Side effects:
+            Записывает данные в файл по пути `self._filename`.
+            Выводит сообщение о успешном сохранении.
+
+        Raises:
+            PermissionError: если нет прав на запись в файл.
+            TypeError: если объекты в списке не поддерживают преобразование в словарь.
+        """
         # Преобразуем объекты Vacancy в словари для JSON
         data = []
         for vac in vacancies:
@@ -112,7 +183,18 @@ class JSONSaver(AbstractFile):
 
 
     def delete_vacancies(self):
-        """ на выходе - [] """
+        """
+        Очищает JSON‑файл, записывая в него пустой список.
+
+        После выполнения метода файл существует, но содержит `[]`.
+
+        Side effects:
+            Перезаписывает файл по пути `self._filename` пустым списком.
+            Выводит сообщение об успешном удалении.
+
+        Raises:
+            PermissionError: если нет прав на запись в файл.
+        """
         with open(self._filename, "w", encoding="utf-8") as f:
             json.dump([], f, ensure_ascii=False, indent=2)
         print(f"\nВакансии успешно удалены из {self._filename}")
