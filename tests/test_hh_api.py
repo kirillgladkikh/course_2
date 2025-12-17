@@ -215,3 +215,17 @@ def test_hhapi_connect_http_error():
 
         with pytest.raises(requests.HTTPError):
             hh._connect("python", 10)
+
+
+def test_hhapi_get_vacancies_empty_response():
+    hh = HHApi()
+
+    # Подменяем _connect, чтобы вернуть пустой ответ
+    def mock_connect(keyword, per_page):
+        return {"items": []}
+
+    hh._connect = mock_connect
+
+    result = hh.hh_api_get_vacancies("xyz", 5)
+    assert isinstance(result, list)
+    assert len(result) == 0
