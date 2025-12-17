@@ -86,3 +86,18 @@ def test_filter_vacancies_by_words_invalid_input():
 
     with pytest.raises(TypeError):
         filter_vacancies_by_words([], [123])
+
+
+# Тесты для get_vacancies_by_salary
+def test_get_vacancies_by_salary_non_zero(sample_vacancies):
+    result = get_vacancies_by_salary(sample_vacancies)
+    assert len(result) == 2
+    assert all(v.salary_from > 0 for v in result)
+
+def test_get_vacancies_by_salary_all_zero():
+    vacancies = [
+        Vacancy(name="Без зарплаты", salary=None, url="", description=""),
+        Vacancy(name="Ещё без зарплаты", salary={"from": 0}, url="", description="")
+    ]
+    result = get_vacancies_by_salary(vacancies)
+    assert len(result) == 0
