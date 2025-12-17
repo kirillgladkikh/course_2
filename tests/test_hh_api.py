@@ -229,3 +229,15 @@ def test_hhapi_get_vacancies_empty_response():
     result = hh.hh_api_get_vacancies("xyz", 5)
     assert isinstance(result, list)
     assert len(result) == 0
+
+
+def test_hhapi_get_vacancies_no_items_in_response():
+    hh = HHApi()
+
+    def mock_connect(keyword, per_page):
+        return {}  # нет ключа "items"
+
+    hh._connect = mock_connect
+
+    with pytest.raises(KeyError):
+        hh.hh_api_get_vacancies("python", 5)
