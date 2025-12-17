@@ -541,6 +541,25 @@ def get_vacancies_by_salary(vacancies: list[Vacancy]) -> list[Vacancy]:
         Список объектов Vacancy, у которых salary_from больше нуля
     """
 
+def filter_vacancies_by_words(vacancies: list[Vacancy], keywords: list[str]) -> list[Vacancy]:
+
+    """
+    Фильтрует вакансии по наличию ключевых слов в описании.
+
+    Поиск выполняется без учёта регистра. Каждое ключевое слово должно встречаться
+    хотя бы один раз в описании вакансии (логическое И между словами).
+
+    Args:
+        vacancies: список объектов Vacancy для фильтрации
+        keywords: список ключевых слов для поиска в описании
+
+    Returns:
+        Список объектов Vacancy, в описании которых присутствуют все ключевые слова
+
+    Raises:
+        TypeError: если keywords не является списком строк
+    """
+
 def sort_vacancies(vacancies: list[Vacancy]) -> list[Vacancy]:
 
     """
