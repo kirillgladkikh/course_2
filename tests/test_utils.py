@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import patch
 from src.vacancy import Vacancy
 from src.utils import (
     print_vacancy_obj,
@@ -148,3 +149,38 @@ def test_print_vacancy_count_top_n_less(capsys, sample_vacancies):
     captured = capsys.readouterr()
     assert "Всего нашлось 3 вакансий под заданные условия." in captured.out
     assert "На экран выведено 2 вакансий." in captured.out
+
+
+# # Тесты для get_valid_currency
+# def test_get_valid_currency_valid(valid_currency_list):
+#     with patch('builtins.input', return_value="rur"):
+#         result = get_valid_currency(valid_currency_list)
+#     assert result == "RUR"
+#
+#
+# def test_get_valid_currency_invalid(capsys, valid_currency_list):
+#     # Подменяем input так, чтобы вернуть два значения по очереди
+#     with patch('builtins.input', side_effect=["invalid", "rur"]):
+#         result = get_valid_currency(valid_currency_list)
+#
+#     assert result == "RUR"
+#     captured = capsys.readouterr()
+#     assert "Валюта должна быть: или RUR или KZT или UZS." in captured.out
+
+
+# Тесты для vacancy_objects_for_json
+def test_vacancy_objects_for_json_normal():
+    raw_data = [
+        {
+            "name": "Тестовая вакансия",
+            "salary": {"from": 50000, "to": 70000, "currency": "RUR"},
+            "url": "https://test.com",
+            "description": "Описание тестовой вакансии"
+        }
+    ]
+    result = vacancy_objects_for_json(raw_data)
+    assert len(result) == 1
+    assert isinstance(result[0], Vacancy)
+    assert result[0].salary_from == 50000
+    assert result[0].salary_to == 70000
+    assert result[0].salary_currency == "RUR"
