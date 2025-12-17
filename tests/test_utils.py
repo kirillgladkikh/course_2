@@ -101,3 +101,11 @@ def test_get_vacancies_by_salary_all_zero():
     ]
     result = get_vacancies_by_salary(vacancies)
     assert len(result) == 0
+
+
+# Тесты для sort_vacancies
+def test_sort_vacancies_descending(sample_vacancies):
+    result = sort_vacancies(sample_vacancies)
+    # Проверяем, что сортировка по убыванию salary_from
+    salaries = [v.salary_from for v in result if v.salary_from > 0]
+    assert salaries == sorted(salaries, reverse=True)
