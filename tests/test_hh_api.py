@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import patch
+import requests
 from src.hh_api import HHApi
 
 
@@ -201,3 +202,16 @@ def test_hhapi_connect_success(monkeypatch):
 
         # Проверяем результат
         assert result == mock_response
+
+
+def test_hhapi_connect_http_error():
+    with patch("requests.get") as mock_get:
+        # Имитируем ошибку 404
+        mock_get.return_value.status_code = 404
+        mock_get.return_value.reason = "Not Found"
+        mock_get.return_value.raise_for_status.side_effect = requests.HTTPError("404")
+
+        hh = HHApi()
+
+        with pytest.raises(requests.HTTPError):
+            hh._connect("python", 10)
