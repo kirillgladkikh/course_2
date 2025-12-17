@@ -241,3 +241,9 @@ def test_hhapi_get_vacancies_no_items_in_response():
 
     with pytest.raises(KeyError):
         hh.hh_api_get_vacancies("python", 5)
+
+
+def test_hhapi_init():
+    hh = HHApi()
+    assert hh._HHApi__url == "https://api.hh.ru/vacancies"
+    assert hh._HHApi__params == {}
