@@ -60,3 +60,29 @@ def test_filter_vacancies_by_currency_kzt(sample_vacancies, valid_currency_list)
 def test_filter_vacancies_by_currency_empty(sample_vacancies, valid_currency_list):
     result = filter_vacancies_by_currency(sample_vacancies, "UZS")
     assert len(result) == 0
+
+
+# Тесты для filter_vacancies_by_words
+def test_filter_vacancies_by_words_single(sample_vacancies):
+    result = filter_vacancies_by_words(sample_vacancies, ["Python"])
+    assert len(result) == 2  # Python в названии и описании
+
+def test_filter_vacancies_by_words_multiple(sample_vacancies):
+    result = filter_vacancies_by_words(sample_vacancies, ["Python", "Django"])
+    assert len(result) == 1  # Только где есть оба слова
+    assert result[0].name == "Разработчик Python"
+
+def test_filter_vacancies_by_words_no_match(sample_vacancies):
+    result = filter_vacancies_by_words(sample_vacancies, ["Rust"])
+    assert len(result) == 0
+
+def test_filter_vacancies_by_words_empty_keywords(sample_vacancies):
+    result = filter_vacancies_by_words(sample_vacancies, [])
+    assert result == sample_vacancies  # Возвращает исходный список
+
+def test_filter_vacancies_by_words_invalid_input():
+    with pytest.raises(TypeError):
+        filter_vacancies_by_words([], "not a list")
+
+    with pytest.raises(TypeError):
+        filter_vacancies_by_words([], [123])
