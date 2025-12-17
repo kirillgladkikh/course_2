@@ -154,7 +154,7 @@ def test_filter_vacancies_description(input_vacancies, expected_descriptions):
         ),
     ],
 )
-def test_filter_vacancies_salary(input_vacancy, expected_salary):
+def test_filter_vacancies_salary(input_vacancy, expected_salary) -> None:
     """
     Проверяет, как filter_vacancies обрабатывает разные варианты поля 'salary':
     - присутствует и является словарём;
@@ -179,13 +179,9 @@ def test_filter_vacancies_salary(input_vacancy, expected_salary):
     assert isinstance(vacancy["url"], str)
 
 
-def test_hhapi_connect_success(monkeypatch):
+def test_hhapi_connect_success(monkeypatch) -> None:
     # Мокируем requests.get, чтобы не делать реальный HTTP‑запрос
-    mock_response = {
-        "items": [
-            {"name": "Mocked Job", "salary": {"from": 100000}, "alternate_url": "https://mock"}
-        ]
-    }
+    mock_response = {"items": [{"name": "Mocked Job", "salary": {"from": 100000}, "alternate_url": "https://mock"}]}
 
     with patch("requests.get") as mock_get:
         mock_get.return_value.json = lambda: mock_response
@@ -204,7 +200,7 @@ def test_hhapi_connect_success(monkeypatch):
         assert result == mock_response
 
 
-def test_hhapi_connect_http_error():
+def test_hhapi_connect_http_error() -> None:
     with patch("requests.get") as mock_get:
         # Имитируем ошибку 404
         mock_get.return_value.status_code = 404
@@ -217,7 +213,7 @@ def test_hhapi_connect_http_error():
             hh._connect("python", 10)
 
 
-def test_hhapi_get_vacancies_empty_response():
+def test_hhapi_get_vacancies_empty_response() -> None:
     hh = HHApi()
 
     # Подменяем _connect, чтобы вернуть пустой ответ
@@ -231,7 +227,7 @@ def test_hhapi_get_vacancies_empty_response():
     assert len(result) == 0
 
 
-def test_hhapi_get_vacancies_no_items_in_response():
+def test_hhapi_get_vacancies_no_items_in_response() -> None:
     hh = HHApi()
 
     def mock_connect(keyword, per_page):
@@ -243,7 +239,7 @@ def test_hhapi_get_vacancies_no_items_in_response():
         hh.hh_api_get_vacancies("python", 5)
 
 
-def test_hhapi_init():
+def test_hhapi_init() -> None:
     hh = HHApi()
     assert hh._HHApi__url == "https://api.hh.ru/vacancies"
     assert hh._HHApi__params == {}

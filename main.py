@@ -1,4 +1,5 @@
 from src.hh_api import HHApi
+
 # from src.vacancy import Vacancy
 from src.json_saver import JSONSaver
 from src.utils import (
@@ -86,7 +87,9 @@ def user_interaction() -> None:
 
     # Запрашивает у пользователя ключевые слова для фильтрации вакансий - по описанию.
     # по-умолчанию filter_words = "backend"
-    filter_words = input_with_default("Введите ключевые слова для фильтрации вакансий - по описанию: ", "backend").split()
+    filter_words = input_with_default(
+        "Введите ключевые слова для фильтрации вакансий - по описанию: ", "backend"
+    ).split()
     # filter_words = input("Введите ключевые слова для фильтрации вакансий - по описанию: ").split()
     print(f"filter_words = {filter_words}")
 

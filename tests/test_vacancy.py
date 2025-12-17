@@ -15,7 +15,7 @@ class TestVacancy:
     - методы сравнения и строкового представления.
     """
 
-    def test_init_basic_fields(self):
+    def test_init_basic_fields(self) -> None:
         """
         Проверяет корректную инициализацию обязательных полей объекта Vacancy.
 
@@ -39,7 +39,7 @@ class TestVacancy:
         assert vac.url == "https://example.com"
         assert vac.description == "Разработка на Python"
 
-    def test_salary_none(self):
+    def test_salary_none(self) -> None:
         """
         Проверяет обработку случая, когда salary=None.
 
@@ -55,7 +55,7 @@ class TestVacancy:
         assert vac.salary_from == 0
         assert vac.salary_to == 0
 
-    def test_salary_missing_from_or_to(self):
+    def test_salary_missing_from_or_to(self) -> None:
         """
         Проверяет обработку отсутствующих ключей 'from' или 'to' в словаре salary.
 
@@ -94,7 +94,7 @@ class TestVacancy:
         assert vac.salary_from == 0
         assert vac.salary_to == 0
 
-    def test_extra_fields_via_kwargs(self):
+    def test_extra_fields_via_kwargs(self) -> None:
         """
         Проверяет сохранение дополнительных полей, переданных через **kwargs.
 
@@ -135,7 +135,7 @@ class TestVacancy:
 
         assert "salary должен быть dict или None" in str(excinfo.value)
 
-    def test_lt_comparison(self):
+    def test_lt_comparison(self) -> None:
         """
         Проверяет работу метода __lt__ (меньше) для сравнения вакансий.
 
@@ -152,7 +152,7 @@ class TestVacancy:
         assert vac1 < vac2  # 50000 < 70000
         assert not (vac2 < vac1)
 
-    def test_str_representation(self):
+    def test_str_representation(self) -> None:
         """
         Проверяет строковое представление объекта Vacancy через метод __str__.
 

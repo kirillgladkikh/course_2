@@ -1,5 +1,6 @@
 import pytest
 import json
+
 # from pathlib import Path
 from src.vacancy import Vacancy
 from src.json_saver import JSONSaver

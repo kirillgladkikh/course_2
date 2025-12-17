@@ -50,6 +50,7 @@ class JSONSaver(AbstractFile):
     Атрибуты:
         _filename (Path): путь к JSON‑файлу с вакансиями.
     """
+
     def __init__(self, path: str = "data/vacancies.json") -> None:
         """
         Инициализирует экземпляр JSONSaver.

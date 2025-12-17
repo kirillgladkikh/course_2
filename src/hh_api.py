@@ -94,7 +94,6 @@ class HHApi(AbstractAPI):
         self.__params["text"] = keyword
         self.__params["per_page"] = per_page
         response = requests.get(self.__url, params=self.__params)
-        # взять код через if из урока по api
         response.raise_for_status()
         return response.json()
 
