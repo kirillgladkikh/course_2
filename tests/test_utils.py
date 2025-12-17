@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import patch
+# from unittest.mock import patch
 from src.vacancy import Vacancy
 from src.utils import (
     print_vacancy_obj,
@@ -149,8 +149,8 @@ def test_print_vacancy_count_top_n_less(capsys, sample_vacancies):
     captured = capsys.readouterr()
     assert "Всего нашлось 3 вакансий под заданные условия." in captured.out
     assert "На экран выведено 2 вакансий." in captured.out
-
-
+#
+#
 # # Тесты для get_valid_currency
 # def test_get_valid_currency_valid(valid_currency_list):
 #     with patch('builtins.input', return_value="rur"):
