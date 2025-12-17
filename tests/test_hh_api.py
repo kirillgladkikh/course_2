@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import patch
 from src.hh_api import HHApi
 
 
@@ -175,3 +176,28 @@ def test_filter_vacancies_salary(input_vacancy, expected_salary):
     assert "url" in vacancy
     assert isinstance(vacancy["description"], str)
     assert isinstance(vacancy["url"], str)
+
+
+def test_hhapi_connect_success(monkeypatch):
+    # Мокируем requests.get, чтобы не делать реальный HTTP‑запрос
+    mock_response = {
+        "items": [
+            {"name": "Mocked Job", "salary": {"from": 100000}, "alternate_url": "https://mock"}
+        ]
+    }
+
+    with patch("requests.get") as mock_get:
+        mock_get.return_value.json = lambda: mock_response
+        mock_get.return_value.raise_for_status = lambda: None  # имитация успеха
+
+        hh = HHApi()
+        result = hh._connect("python", 10)
+
+        # Проверяем, что вызов был с правильными параметрами
+        assert mock_get.called
+        assert mock_get.call_args[1]["params"]["text"] == "python"
+        assert mock_get.call_args[1]["params"]["per_page"] == 10
+        assert mock_get.call_args[0][0] == "https://api.hh.ru/vacancies"
+
+        # Проверяем результат
+        assert result == mock_response
