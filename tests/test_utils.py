@@ -109,3 +109,28 @@ def test_sort_vacancies_descending(sample_vacancies):
     # Проверяем, что сортировка по убыванию salary_from
     salaries = [v.salary_from for v in result if v.salary_from > 0]
     assert salaries == sorted(salaries, reverse=True)
+
+
+# Тесты для get_top_vacancies
+def test_get_top_vacancies_normal(sample_vacancies):
+    sorted_vac = sort_vacancies(sample_vacancies)
+    result = get_top_vacancies(sorted_vac, 2)
+    assert len(result) == 2
+
+def test_get_top_vacancies_exceeds_length(sample_vacancies):
+    sorted_vac = sort_vacancies(sample_vacancies)
+    result = get_top_vacancies(sorted_vac, 10)
+    assert len(result) <= len(sample_vacancies)  # Не больше исходного
+
+def test_get_top_vacancies_zero(sample_vacancies):
+    sorted_vac = sort_vacancies(sample_vacancies)
+    result = get_top_vacancies(sorted_vac, 0)
+    assert len(result) == 0
+
+def test_get_top_vacancies_negative():
+    with pytest.raises(ValueError):
+        get_top_vacancies([], -1)
+
+def test_get_top_vacancies_non_int():
+    with pytest.raises(TypeError):
+        get_top_vacancies([], "20")
