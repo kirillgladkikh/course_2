@@ -134,3 +134,17 @@ def test_get_top_vacancies_negative():
 def test_get_top_vacancies_non_int():
     with pytest.raises(TypeError):
         get_top_vacancies([], "20")
+
+
+# Тесты для print_vacancy_count (проверяем вывод через capsys)
+def test_print_vacancy_count_normal(capsys, sample_vacancies):
+    print_vacancy_count(sample_vacancies, 5)
+    captured = capsys.readouterr()
+    assert "Всего нашлось 3 вакансий под заданные условия." in captured.out
+    assert "На экран выведено 3 вакансий." in captured.out
+
+def test_print_vacancy_count_top_n_less(capsys, sample_vacancies):
+    print_vacancy_count(sample_vacancies, 2)
+    captured = capsys.readouterr()
+    assert "Всего нашлось 3 вакансий под заданные условия." in captured.out
+    assert "На экран выведено 2 вакансий." in captured.out
