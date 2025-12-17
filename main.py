@@ -8,7 +8,8 @@ from src.utils import (
     get_valid_top_n,
     get_valid_currency,
     vacancy_objects_for_json,
-    filter_vacancies,
+    filter_vacancies_by_currency,
+    filter_vacancies_by_words,
     get_vacancies_by_salary,
     sort_vacancies,
     get_top_vacancies,
@@ -83,15 +84,16 @@ def user_interaction() -> None:
     top_n = get_valid_top_n()
     print(f"top_n = {top_n}")
 
+    # Запрашивает у пользователя ключевые слова для фильтрации вакансий - по описанию.
+    # по-умолчанию filter_words = "backend"
+    filter_words = input_with_default("Введите ключевые слова для фильтрации вакансий - по описанию: ", "backend").split()
+    # filter_words = input("Введите ключевые слова для фильтрации вакансий - по описанию: ").split()
+    print(f"filter_words = {filter_words}")
+
     # Запрашивает у пользователя ключевые слова для фильтрации вакансий - по ВАЛЮТЕ (RUR/KZT/UZS) с валидацией.
-    # по-умолчанию per_page = 20
+    # по-умолчанию filter_currency = "RUR"
     filter_currency = get_valid_currency(VALID_CURRENCY)
     print(f"filter_currency = {filter_currency}")
-
-    # НАДО ЕЩЕ СДЕЛАТЬ ОБЯЗАТЕЛЬНО !!!
-    # получить вакансии с ключевым словом в описании.
-    # -----------------filter_words = input_with_default("Введите ключевые слова для фильтрации вакансий - по описанию: ", "")
-    # -----------------print(filter_words)
 
     # ОБРАБОТКА ЗАПРОСОВ ПОЛЬЗОВАТЕЛЯ
 
@@ -126,24 +128,30 @@ def user_interaction() -> None:
 
     # ФИЛЬТРУЕМ, СОРТИРУЕМ, ВЫВОДИМ ТОП ВАКАНСИЙ
 
-    filtered_vacancies = filter_vacancies(
-        all_vacancies, filter_currency
-    )  # Оставляем только выбранную пользователем валюту зарплаты
-    # print_vacancy_obj(filtered_vacancies)
+    # Оставляем только выбранную пользователем валюту зарплаты
+    filtered_vacancies_by_currency = filter_vacancies_by_currency(all_vacancies, filter_currency)
+    # print_vacancy_obj(filtered_vacancies_by_currency)
 
-    # ------------------------------- НАДО ЕЩЕ СДЕЛАТЬ ОБЯЗАТЕЛЬНО !!!
-    # получить вакансии с ключевым словом в описании.
-    # filtered_vacancies = filter_vacancies(vacancies_list, filter_words)
+    # Оставляем только вакансии содержащие выбранные пользователем ключевые слова в описании.
+    filtered_vacancies_by_words = filter_vacancies_by_words(filtered_vacancies_by_currency, filter_words)
+    # print_vacancy_obj(filtered_vacancies_by_words)
 
-    ranged_vacancies = get_vacancies_by_salary(filtered_vacancies)  # Убираем из списка вакансии с нулями в зарплате
+    # Убираем из списка вакансии с нулями в зарплате
+    ranged_vacancies = get_vacancies_by_salary(filtered_vacancies_by_words)
     # print_vacancy_obj(ranged_vacancies)
-    sorted_vacancies = sort_vacancies(ranged_vacancies)  # Сортируем вакансии по убыванию
+
+    # Сортируем вакансии по убыванию
+    sorted_vacancies = sort_vacancies(ranged_vacancies)
     # print_vacancy_obj(sorted_vacancies)
-    top_vacancies = get_top_vacancies(sorted_vacancies, top_n)  # Формируем TOP-N список вакансий
-    print_vacancy_obj(top_vacancies)  # Выводим в консоль TOP-N вакансий сформированный под условия пользователя
-    print_vacancy_count(
-        sorted_vacancies, top_n
-    )  # Выводим в консоль сообщение о количестве ВСЕХ полученных вакансий под условия пользователя
+
+    # Формируем TOP-N список вакансий
+    top_vacancies = get_top_vacancies(sorted_vacancies, top_n)
+
+    # Выводим в консоль TOP-N вакансий сформированный под условия пользователя
+    print_vacancy_obj(top_vacancies)
+
+    # Выводим в консоль сообщение о количестве ВСЕХ полученных вакансий под условия пользователя
+    print_vacancy_count(sorted_vacancies, top_n)
 
     return
 

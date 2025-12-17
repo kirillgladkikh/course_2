@@ -152,7 +152,7 @@ def vacancy_objects_for_json(filtered_vacancies: list[dict]) -> list[Vacancy]:
     # Теперь список объектов Vacancy (не словарей!) имеет корректно обработанные поля salary_from/salary_to
 
 
-def filter_vacancies(all_vacancies: list[Vacancy], filter_currency: str) -> list[Vacancy]:
+def filter_vacancies_by_currency(all_vacancies: list[Vacancy], filter_currency: str) -> list[Vacancy]:
     """
     Фильтрует список вакансий по валюте зарплаты.
 
@@ -169,6 +169,46 @@ def filter_vacancies(all_vacancies: list[Vacancy], filter_currency: str) -> list
     for vacancy in all_vacancies:
         if vacancy.salary_currency == filter_currency.upper():
             filtered.append(vacancy)
+    return filtered
+
+
+def filter_vacancies_by_words(vacancies: list[Vacancy], keywords: list[str]) -> list[Vacancy]:
+    """
+    Фильтрует вакансии по наличию ключевых слов в описании.
+
+    Поиск выполняется без учёта регистра. Каждое ключевое слово должно встречаться
+    хотя бы один раз в описании вакансии (логическое И между словами).
+
+    Args:
+        vacancies: список объектов Vacancy для фильтрации
+        keywords: список ключевых слов для поиска в описании
+
+    Returns:
+        Список объектов Vacancy, в описании которых присутствуют все ключевые слова
+
+    Raises:
+        TypeError: если keywords не является списком строк
+    """
+    # Проверка типов
+    if not isinstance(keywords, list):
+        raise TypeError("keywords должен быть списком")
+
+    if not all(isinstance(word, str) for word in keywords):
+        raise TypeError("все элементы keywords должны быть строками")
+
+    # Если ключевых слов нет, возвращаем исходный список
+    if not keywords:
+        return vacancies
+
+    filtered = []
+
+    for vacancy in vacancies:
+        description = (vacancy.description or "").lower()
+
+        # Проверяем, что все ключевые слова присутствуют в описании
+        if all(keyword.lower() in description for keyword in keywords):
+            filtered.append(vacancy)
+
     return filtered
 
 
